@@ -2,7 +2,7 @@ from sklearn.linear_model import LogisticRegression
 import pandas as pd
 import numpy as np
 from typing import Union, List
-
+#https://towardsdatascience.com/how-to-open-source-your-first-python-package-e717444e1da0
 def run_logistic_regression(data:Union[list, tuple, pd.DataFrame], 
                             covariates_cols:Union[List[str], None]=None, 
                             treatment_col:Union[str, None]=None, 
@@ -52,10 +52,3 @@ def run_logistic_regression(data:Union[list, tuple, pd.DataFrame],
     elif (tup or ls) and (len(data)==2):
         prob = LR.predict_proba(X)[:,1]
         return prob
-
-def f0(a, b):
-    print(a)
-    print(b)
-def f(a,b,*args):
-    f0(a,b,*args)
-input = ('a', 'b')
