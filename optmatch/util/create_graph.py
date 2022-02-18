@@ -42,7 +42,6 @@ def create_distance_edge_list_parallel(treatment:np.array, ps:np.array, k:int):
     exp_ids = df_exp.index
     nexp_ids = df_nexp.index
     init_edge_ls = create_initial_edge_list(nexp_ids, exp_ids, k)
-    print(init_edge_ls)
     exp_list = [(exp_row, exp_id) for exp_id, exp_row in df_exp.iterrows()]
     nexp_list = [(nexp_row, nexp_id) for nexp_id, nexp_row in df_nexp.iterrows()]
     exp_nexp_comb_ls = list(itertools.product(exp_list, nexp_list))
@@ -51,8 +50,7 @@ def create_distance_edge_list_parallel(treatment:np.array, ps:np.array, k:int):
     start = time.time()
     with mp.Pool() as pool:
         edge_list_exp_nexp = pool.starmap(compute_ps_abs_dist, mp_input)
-    print(time.time()-start)
-    print(edge_list_exp_nexp)
+    print(f'{time.time()-start:.2f} s')
     edge_ls = init_edge_ls + edge_list_exp_nexp
     return edge_ls, exp_ids, nexp_ids
 
