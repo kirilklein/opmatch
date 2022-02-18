@@ -2,13 +2,15 @@ import pandas as pd
 import numpy as np
 from typing import Union, List
 
-def get_X_y(data:Union[pd.DataFrame, None],
-    X:Union[List[str], np.array, None], 
-    y:Union[List[str], np.array, None],)->tuple(np.array,np.array):
+def get_X_y_lr(data:Union[pd.DataFrame, None]=None,
+    X:Union[List[str], np.array, None]=None, 
+    y:Union[List[str], np.array, None]=None,
+    )->tuple:
     
     df = isinstance(data, pd.DataFrame)
     Xnan = isinstance(X, type(None))
     ynan = isinstance(y, type(None)) 
+    
     if df:
         if Xnan and ynan:
             print("y (treatment_col) and X (covariates_cols) are not specified.")
@@ -30,7 +32,33 @@ def get_X_y(data:Union[pd.DataFrame, None],
             y = data[y]
 
     elif isinstance(X, np.array) and isinstance(y, np.array):
-        assert len(X)==len(y), "X and y must have the same length!"
+        assert len(X)==len(y), "X, y and score must have the same length!"
+        return X, y
     else:
-        assert False, "Either pass DataFrame to data or numpy arays to X and y."
+        assert False, "Either pass DataFrame to data or numpy arays to X, y and score."
     return X, y
+
+def create_ids(data, X, y):
+    """Create ids, if df store under column 'id',
+    else return X, y and ids"""
+    Xnan = isinstance(X, type(None))
+    ynan = isinstance(y, type(None))   
+    if isinstance(data, pd.DataFrame): 
+        ids = np.arange(len(data))
+        data['id'] = ids
+        return data
+    else:
+        assert (not Xnan) and (not ynan), "Provide X and y if data is not provided" 
+        ids = np.arange(len(y))
+        return X, y, ids
+
+def get_X_y_match(data, X, y, score, ids):
+    df = isinstance(data, pd.DataFrame)
+    Xnan = isinstance(X, type(None))
+    ynan = isinstance(y, type(None)) 
+    snan = isinstance(score, type(None))
+    idsnan = isinstance(ids, type(None))
+    if df:
+        
+    else:
+        assert (not Xnan) and (not ynan) and (not snan) and (not idsnan):

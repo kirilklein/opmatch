@@ -1,5 +1,6 @@
 from typing import List, Union
 import networkx as nx
+import pandas as pd
 
 def create_source_unexp_edges(unexp_ids:List[int])->List[tuple]:
     """Create edges between source node and unexposed patients 
@@ -26,8 +27,10 @@ def create_initial_edge_list(unexp_ids:List[int],
 #    X:Union[List[str], np.array, None], 
 #    y:Union[List[str], np.array, None]):
 #    edge_list = create_initial_edge_list()
-def create_distance_edge_list(): pass
-
+def create_distance_edge_list(treatment, ps): 
+    """treatment: boolean np.array (treatment/no treatment)
+       ps: float np.array propensity scores"""
+    pd.Dataframe(np.concatenate(treatment, ps), columns = ['ps', 'treatment'])
 def create_di_graph(edge_list:List[tuple])->nx.DiGraph:
     G = nx.DiGraph()
     G.add_edges_from(edge_list)
