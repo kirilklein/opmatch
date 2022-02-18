@@ -15,7 +15,7 @@ def run_logistic_regression(data:Union[pd.DataFrame, None]=None,
         by default the last column will be used as treatment col, and the rest as covariates cols
         *args and **kwargs are passed to sklearn.linear_model.LogisticRegression
     """
-    X, y = preprocess.get_X_y_ls(data, X, y)
+    X, y = preprocess.get_X_y_lr(data, X, y)
     if isinstance(random_state, int):
         LR = LogisticRegression(*args, **kwargs, random_state=random_state).fit(X, y)
     else:

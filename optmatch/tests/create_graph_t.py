@@ -8,17 +8,21 @@ import numpy as np
 import matplotlib.pyplot as plt
 import networkx as nx
 
-X, y = create_test_data.get_test_data(False)
+X, y, ps = create_test_data.get_test_data(False, 4, 3)
+
 ids = np.arange(len(y))
 unexp_ids = ids[y==0]
 exp_ids = ids[y==1]
 edges = create_graph.create_source_unexp_edges(unexp_ids)
 edges = create_graph.append_case_sink_edges(edges, exp_ids, 2)
 
-print(edges)
-fig, ax = plt.subplots()
+
+#fig, ax = plt.subplots()
 #BG = nx.DiGraph()
 #BG.add_edges_from(edges)
 #nx.draw_networkx(BG,  ax=ax, with_labels=False,
 #    )
-fig.savefig('graph.png')
+#fig.savefig('graph.png')
+if __name__ == '__main__':
+    edge_ls = create_graph.create_distance_edge_list_parallel(y, ps, 3)
+    print(edge_ls)

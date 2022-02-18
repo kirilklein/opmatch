@@ -51,14 +51,3 @@ def create_ids(data, X, y):
         assert (not Xnan) and (not ynan), "Provide X and y if data is not provided" 
         ids = np.arange(len(y))
         return X, y, ids
-
-def get_X_y_match(data, X, y, score, ids):
-    df = isinstance(data, pd.DataFrame)
-    Xnan = isinstance(X, type(None))
-    ynan = isinstance(y, type(None)) 
-    snan = isinstance(score, type(None))
-    idsnan = isinstance(ids, type(None))
-    if df:
-        
-    else:
-        assert (not Xnan) and (not ynan) and (not snan) and (not idsnan):
