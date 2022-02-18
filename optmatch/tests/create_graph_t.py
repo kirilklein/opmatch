@@ -24,5 +24,5 @@ edges = create_graph.append_case_sink_edges(edges, exp_ids, 2)
 #    )
 #fig.savefig('graph.png')
 if __name__ == '__main__':
-    edge_ls = create_graph.create_distance_edge_list_parallel(y, ps, 3)
-    print(edge_ls)
+    out_ = create_graph.create_distance_edge_list_parallel(y, ps, 1)
+    #print(out_[0])

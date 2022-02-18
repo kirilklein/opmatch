@@ -5,9 +5,9 @@ from scipy.stats import norm, bernoulli, uniform
 
 
 
-def get_test_data(df=True, num_pat = 10, num_var = 3):
+def get_test_data(df=True, num_pat = 10, num_var = 3, pexp=.5):
     X = norm.rvs(size=(num_pat, num_var))
-    y = bernoulli.rvs(p =.3 , size=num_pat)
+    y = bernoulli.rvs(p=pexp , size=num_pat)
     ps = uniform.rvs(size=num_pat)
     if df:
         x_cols = ['x' + str(i) for i in range(num_var)]
