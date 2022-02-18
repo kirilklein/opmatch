@@ -38,6 +38,7 @@ def run_logistic_regression(data:Union[list, tuple, pd.DataFrame],
     elif (tup or ls) and (len(data)==2):
         X = data[0]
         y = data[1]
+        assert len(X)==len(y), "data[0] and data[1] must have the same length!"
     else:
         assert False, "data must be either df or tuple/list of length 2."
 
