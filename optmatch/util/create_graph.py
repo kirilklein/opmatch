@@ -21,3 +21,5 @@ def create_initial_edge_list(unexp_ids:List[int],
     edge_list = create_source_unexp_edges(unexp_ids)
     return append_case_sink_edges(edge_list, exposed_ids, k)
 
+#def create_distance_edge_list(data:):
+#    edge_list = create_initial_edge_list()
