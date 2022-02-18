@@ -1,5 +1,3 @@
-import create_test_data
-import matplotlib.pyplot as plt
+import match_subjects
 
-
-X, y = create_test_data.get_test_data()
+match_subjects.match()

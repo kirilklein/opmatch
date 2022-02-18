@@ -52,9 +52,9 @@ def create_distance_edge_list_parallel(treatment:np.array, ps:np.array, k:int):
         edge_list_exp_nexp = pool.starmap(compute_ps_abs_dist, mp_input)
     print(f'{time.time()-start:.2f} s')
     edge_ls = init_edge_ls + edge_list_exp_nexp
-    return edge_ls, exp_ids, nexp_ids
+    return edge_ls
 
-def create_di_graph(edge_list:List[tuple])->nx.DiGraph:
+def create_di_graph(edge_ls:List[tuple])->nx.DiGraph:
     G = nx.DiGraph()
-    G.add_edges_from(edge_list)
+    G.add_edges_from(edge_ls)
     return G

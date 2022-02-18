@@ -8,7 +8,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import networkx as nx
 
-X, y, ps = create_test_data.get_test_data(False, 500, 3)
+X, y, ps = create_test_data.get_test_data(False, 2000, 3)
 
 ids = np.arange(len(y))
 unexp_ids = ids[y==0]
