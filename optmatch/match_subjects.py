@@ -18,4 +18,5 @@ def match(ps:np.array[float], treatment:np.array[bool], k:int):
     mincostFlow_dic = nx.max_flow_min_cost(G, 'source', 'sink')
     return mincostFlow_dic
 
-#if __name__ == '__main__':
+if __name__ == '__main__':
+    print('hi')
