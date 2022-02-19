@@ -3,8 +3,8 @@ from os.path import join
 ROOT_DIR = os.path.abspath(os.curdir)
 if ROOT_DIR not in sys.path:
     sys.path.append(ROOT_DIR)
-    sys.path.append(join(ROOT_DIR, 'optmatch'))
-from optmatch.util import preprocess
+    sys.path.append(join(ROOT_DIR, 'opmatch'))
+from opmatch.util import preprocess
 import multiprocessing as mp
 import numpy as np
 

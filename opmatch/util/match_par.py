@@ -3,7 +3,7 @@ from os.path import join
 ROOT_DIR = os.path.abspath(os.curdir)
 if ROOT_DIR not in sys.path:
     sys.path.append(ROOT_DIR)
-    sys.path.append(join(ROOT_DIR, 'optmatch'))
+    sys.path.append(join(ROOT_DIR, 'opmatch'))
 from util import create_graph
 import networkx as nx
 import numpy as np

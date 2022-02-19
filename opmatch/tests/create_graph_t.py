@@ -2,7 +2,7 @@ import os, sys
 ROOT_DIR = os.path.abspath(os.curdir)
 if ROOT_DIR not in sys.path:
     sys.path.append(ROOT_DIR)
-from optmatch.util import create_graph
+from opmatch.util import create_graph
 import create_test_data
 
 X, y, ps = create_test_data.get_test_data(False, 2000, 3)
