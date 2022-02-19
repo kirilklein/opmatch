@@ -1,8 +1,15 @@
+import os, sys
+from os.path import join
+ROOT_DIR = os.path.abspath(os.curdir)
+if ROOT_DIR not in sys.path:
+    sys.path.append(ROOT_DIR)
+    sys.path.append(join(ROOT_DIR, 'optmatch'))
 from util import create_graph
 import networkx as nx
 import numpy as np
-import sys
 from typing import Dict, List
+import pickle
+import tempfile
 
 def get_min_cost_flow_dic(edge_ls:List, exp_ids:List):
     """Create a digraph from edge_ls and run max_flow_min_cost algorithm.
@@ -46,9 +53,20 @@ def match_parallel(ps:np.array, treatment:np.array, k:int):
     exp_nexp_dic = get_exp_nexp_dic(mincostFlow_dic)
     return exp_nexp_dic
     
-def test_func(x):
-    print(x)
-
+def main():
+    ps_path = sys.argv[1]
+    trt_path = sys.argv[2]
+    ps = np.load(ps_path+'.npy')
+    trt = np.load(trt_path+'.npy')
+    k = sys.argv[3]
+    exp_nexp_dic = {'test':0}#match_parallel(ps, tgt, k)
+    if os.path.exists(ps_path):
+        os.remove(ps_path)
+    if os.path.exists(trt_path):
+        os.remove(trt_path)
+    dic_handle, dic_path = tempfile.mkstemp()
+    with open(dic_path, 'wb') as f:
+        pickle.dump(exp_nexp_dic, f)
+    return dic_path
 if __name__ == '__main__':
-    x = sys.argv[1]
-    test_func(x)
+    print(main())
