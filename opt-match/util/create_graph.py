@@ -1,10 +1,9 @@
-from typing import List, Union
+from typing import List
 import networkx as nx
 import pandas as pd
 import numpy as np
 import itertools
 import multiprocessing as mp
-import time
 
 def create_source_unexp_edges(unexp_ids:List[int])->List[tuple]:
     """Create edges between source node and unexposed patients 

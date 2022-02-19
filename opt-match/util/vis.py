@@ -17,19 +17,23 @@ def plot_matching(ps, exp_nexp_dic,
     legend=True,
     legend_fs=18,
     legend_pos=0,
+    legend_facecolor='white',
     show=True,
     save=False,
     figname='optmatch\\tests\\matched_ps.png',
     color=None,
     markerstyle_exp='x',
-    markersize_exp=30,
-    markerstyle_unexp='.',
-    markersize_unexp=30,
+    markersize_exp=60,
+    markerstyle_unexp='o',
+    markersize_unexp=60,
+    xtickparams_ls=14,
+    ytickparams_ls=14,
     figsize=(7,5),
-    dpi=300):
+    dpi=100):
     
     fig, ax = plt.subplots(figsize=figsize)
     exp_ids = list(exp_nexp_dic.keys())
+
     for i, exp in enumerate(exp_ids):
         if i==0:
             exp_label = exposed_label
@@ -46,12 +50,14 @@ def plot_matching(ps, exp_nexp_dic,
         ax.scatter(nexp_ps, group_arr, marker=markerstyle_unexp, color=color1, 
                 label=nexp_label, s=markersize_unexp)
     if legend:
-        ax.legend(fontsize=legend_fs, loc=legend_pos)
+        ax.legend(fontsize=legend_fs, loc=legend_pos, facecolor=legend_facecolor)
     if set_title:
         ax.set_title(title, fontsize=title_fs)
     ax.yaxis.set_major_locator(MaxNLocator(integer=True))
     ax.set_xlabel(xlabel, fontsize=xlabel_fs)
     ax.set_ylabel(ylabel, fontsize=ylabel_fs)
+    ax.tick_params(axis='x', which='major', labelsize=xtickparams_ls)
+    ax.tick_params(axis='y', which='major', labelsize=ytickparams_ls)
     if show:
         plt.rcParams["figure.dpi"] = dpi
         plt.show()
