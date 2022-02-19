@@ -56,15 +56,16 @@ def match_parallel(ps:np.array, treatment:np.array, k:int):
 def main():
     ps_path = sys.argv[1]
     trt_path = sys.argv[2]
-    ps = np.load(ps_path+'.npy')
-    trt = np.load(trt_path+'.npy')
-    k = sys.argv[3]
-    exp_nexp_dic = {'test':0}#match_parallel(ps, tgt, k)
+    k = int(sys.argv[3])
+    ps = np.load(ps_path)
+    trt = np.load(trt_path)
+    exp_nexp_dic = match_parallel(ps, trt, k)
     if os.path.exists(ps_path):
         os.remove(ps_path)
     if os.path.exists(trt_path):
         os.remove(trt_path)
-    dic_handle, dic_path = tempfile.mkstemp()
+    dic_handle, dic_path = tempfile.mkstemp(suffix='.pkl')
+    os.close(dic_handle)
     with open(dic_path, 'wb') as f:
         pickle.dump(exp_nexp_dic, f)
     return dic_path

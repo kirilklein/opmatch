@@ -47,10 +47,8 @@ def create_distance_edge_list_parallel(treatment:np.array, ps:np.array, k:int):
     exp_nexp_comb_ls = list(itertools.product(exp_list, nexp_list))
     mp_input = [(exp_row, exp_id, nexp_row, nexp_id) \
         for ((exp_row, exp_id), (nexp_row, nexp_id)) in exp_nexp_comb_ls]
-    start = time.time()
     with mp.Pool() as pool:
         edge_list_exp_nexp = pool.starmap(compute_ps_abs_dist, mp_input)
-    print(f'{time.time()-start:.2f} s')
     edge_ls = init_edge_ls + edge_list_exp_nexp
     return edge_ls, exp_ids, nexp_ids
 
