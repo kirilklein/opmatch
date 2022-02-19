@@ -1,6 +1,6 @@
 import os, sys
 from os.path import join
-
+import pickle
 from matplotlib.markers import MarkerStyle
 ROOT_DIR = os.path.abspath(os.curdir)
 if ROOT_DIR not in sys.path:
@@ -30,6 +30,9 @@ def plot_matching(ps, exp_nexp_dic):
 
 if __name__ == '__main__':
     exp_nexp_dic = match.match_parallel(ps, y, 2)
+    np.save('data\ps', ps)
+    with open('data\exp_nexp_dic.pkl', 'wb') as f:
+        pickle.dump(exp_nexp_dic, f)
     print(exp_nexp_dic)
     plot_matching(ps, exp_nexp_dic)
     
