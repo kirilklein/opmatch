@@ -14,7 +14,8 @@ import numpy as np
 
 X, y, ps = create_test_data.get_test_data(False, 30, 3, .2)
 #script = join(ROOT_DIR, 'optmatch', 'match_subjects.py')
-#output = sp.call(['python', script, 'hallo'], shell=True)
+#script = join(ROOT_DIR, 'optmatch','tests', 'fit_ps_t.py')
+#output = sp.call(['python', script, 'hallo'])
 
 if __name__ == '__main__':
     exp_nexp_dic = match_par.match_parallel(ps, y, 2)
