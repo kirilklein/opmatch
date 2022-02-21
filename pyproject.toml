@@ -1,0 +1,12 @@
+[build-system]
+requires = [
+    "setuptools>=42",
+    "wheel",
+    "certifi",
+    "pandas",
+    "scikit-learn",
+    "numpy",
+    "networkx",
+    "matplotlib"
+]
+build-backend = "setuptools.build_meta"
