@@ -1,6 +1,5 @@
 import os, sys
 from os.path import join
-from types import NoneType
 ROOT_DIR = os.path.abspath(os.curdir)
 if ROOT_DIR not in sys.path:
     sys.path.append(ROOT_DIR)
@@ -35,7 +34,7 @@ def get_exp_nexp_dic(mincostFlow_dic:Dict):
                 exp_nexp_dic[exp] = exp_nexp_dic[exp]+[nexp]
     return exp_nexp_dic
 
-def match_parallel(ps:np.array, treatment:np.array, matching_ratio:Union(int,None)):
+def match_parallel(ps:np.array, treatment:np.array, matching_ratio:Union[int,str]):
     """
     Input:
         ps: propensity scores ()
@@ -52,3 +51,14 @@ def match_parallel(ps:np.array, treatment:np.array, matching_ratio:Union(int,Non
         mincostFlow_dic = get_min_cost_flow_dic(edge_ls, exp_ids)
         exp_nexp_dic = get_exp_nexp_dic(mincostFlow_dic)
         return exp_nexp_dic
+    elif matching_ratio=='variable':
+        pass
+        """
+        edge_ls, exp_ids, nexp_ids = create_graph.create_distance_edge_list_parallel(
+                                        treatment, ps, 1)
+        mincostFlow_dic = get_min_cost_flow_dic(edge_ls, exp_ids)
+        exp_nexp_dic = get_exp_nexp_dic(mincostFlow_dic)
+        """
+    elif matching_ratio=='full':
+        pass
+        
