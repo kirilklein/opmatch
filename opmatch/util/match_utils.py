@@ -46,8 +46,9 @@ def match_parallel(ps:np.array, treatment:np.array, matching_ratio:Union(int,Non
                       values-corresponding matched unexposed patients
     """
     assert len(ps)==len(treatment), "len(ps)!=len(treatment)"
-    edge_ls, exp_ids, nexp_ids = create_graph.create_distance_edge_list_parallel(
-                                    treatment, ps, k)
-    mincostFlow_dic = get_min_cost_flow_dic(edge_ls, exp_ids)
-    exp_nexp_dic = get_exp_nexp_dic(mincostFlow_dic)
-    return exp_nexp_dic
+    if isinstance(matching_ratio, int):
+        edge_ls, exp_ids, nexp_ids = create_graph.create_distance_edge_list_parallel(
+                                        treatment, ps, matching_ratio)
+        mincostFlow_dic = get_min_cost_flow_dic(edge_ls, exp_ids)
+        exp_nexp_dic = get_exp_nexp_dic(mincostFlow_dic)
+        return exp_nexp_dic

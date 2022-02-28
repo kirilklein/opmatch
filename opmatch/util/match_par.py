@@ -4,10 +4,8 @@ ROOT_DIR = os.path.abspath(os.curdir)
 if ROOT_DIR not in sys.path:
     sys.path.append(ROOT_DIR)
     sys.path.append(join(ROOT_DIR, 'opmatch'))
-
 from util import match_utils
 import numpy as np
-from typing import Dict, List
 import pickle
 import tempfile
 
@@ -16,10 +14,13 @@ import tempfile
 def main():
     ps_path = sys.argv[1]
     trt_path = sys.argv[2]
-    k = int(sys.argv[3])
+    try:
+        matching_ratio = int(sys.argv[3])
+    except:
+        matching_ratio = str(sys.argv[3])
     ps = np.load(ps_path)
     trt = np.load(trt_path)
-    exp_nexp_dic = match_utils.match_parallel(ps, trt, k)
+    exp_nexp_dic = match_utils.match_parallel(ps, trt, matching_ratio)
     if os.path.exists(ps_path):
         os.remove(ps_path)
     if os.path.exists(trt_path):
