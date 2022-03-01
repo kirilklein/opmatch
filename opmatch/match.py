@@ -10,26 +10,36 @@ import subprocess as sp
 import numpy as np
 import tempfile
 import warnings
+from typing import Union
 match_script = join(opmatch_dir, 'util', 'match_par.py')
 
-def match(ps:np.array, treatment:np.array, k:int):
+def match(ps:np.array, treatment:np.array, matching_ratio:Union[int, str]):
     """
     Input:
         ps: propensity scores ()
         treatment: boolean array 
-        k: matching coefficient
+        matching ratio: 
+            if integer: matching_ratio controls per positive 
+            elif: str:variable, Controls are matched until average distance stops decreasing
+            elif: str:full, at least one control for every positive and at least one positive for every control
     Returns:
         exp_nexp_dic: keys-exposed patients
                       values-corresponding matched unexposed patients
     """
     assert len(ps)==len(treatment), "len(ps)!=len(treatment)"
-    assert isinstance(k, int), "k must be an integer"
     num_treated = np.sum(treatment)
     num_untreated = len(treatment)-num_treated
-    if k>=(num_untreated/num_treated):
-        warnings.warn(
-        "matching ratio too high, not enough untreated per treated subjects" , 
-        stacklevel=1)
+    if isinstance(matching_ratio, int):
+        if matching_ratio>=(num_untreated/num_treated):
+            warnings.warn(
+            "matching ratio too high, not enough untreated per treated subjects" , 
+            stacklevel=1)
+    elif matching_ratio=='variable':
+        print("Variable matching ratio: Additional controls are matched until matching ratio stops decreasing")
+    elif matching_ratio=='full':
+        assert False, "Full matching not implemented yet"
+    else:
+        assert False, "Matching ratio should be integer, 'variable' or 'full' "
     ps_handle, ps_path = tempfile.mkstemp(suffix='.npy')
     trt_handle, trt_path = tempfile.mkstemp(suffix='.npy')
     np.save(ps_path, ps)
@@ -37,7 +47,7 @@ def match(ps:np.array, treatment:np.array, k:int):
     np.save(trt_path, treatment)
     os.close(trt_handle)
     dic_path = sp.check_output(['python', match_script, ps_path,
-                    trt_path, str(k)],stderr=sp.STDOUT).decode(encoding="utf-8")
+                    trt_path, str(matching_ratio)],stderr=sp.STDOUT).decode(encoding="utf-8")
     dic_path = dic_path[:-2]
     with open(dic_path, 'rb') as f:
         exp_nexp_dic = pickle.load(f)

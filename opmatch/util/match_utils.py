@@ -8,6 +8,7 @@ from util import create_graph
 import networkx as nx
 import numpy as np
 from typing import Dict, List, Union
+import pandas as pd
 
 def get_min_cost_flow_dic(edge_ls:List, exp_ids:List):
     """Create a digraph from edge_ls and run max_flow_min_cost algorithm.
@@ -45,6 +46,13 @@ def match_parallel(ps:np.array, treatment:np.array, matching_ratio:Union[int,str
                       values-corresponding matched unexposed patients
     """
     assert len(ps)==len(treatment), "len(ps)!=len(treatment)"
+    matched = np.zeros(len(ps))
+    df = pd.DataFrame(np.transpose(np.stack([ps, treatment, matched])), 
+                    columns = ['ps', 'exposed', 'matched'])
+    df_exp = df[df['exposed']==1]
+    df_nexp = df[df['exposed']==0]
+    exp_ids = df_exp.index
+    nexp_ids = df_nexp.index
     if isinstance(matching_ratio, int):
         edge_ls, exp_ids, nexp_ids = create_graph.create_distance_edge_list_parallel(
                                         treatment, ps, matching_ratio)

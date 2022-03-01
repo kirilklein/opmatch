@@ -5,8 +5,11 @@ if ROOT_DIR not in sys.path:
 from opmatch.util import create_graph
 import create_test_data
 
-X, y, ps = create_test_data.get_test_data(False, 2000, 3)
+X, y, ps = create_test_data.get_test_data(False, 10, 3)
 
 if __name__ == '__main__':
-    out_ = create_graph.create_distance_edge_list_parallel(y, ps, 2)
+    out_ = create_graph.create_distance_edge_list_parallel(y, ps, 1)
+    print(out_[0])
+    print(out_[1])
+    print(out_[2])
     print(len(out_[0]))
