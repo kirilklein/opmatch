@@ -4,11 +4,12 @@ ROOT_DIR = os.path.abspath(os.curdir)
 if ROOT_DIR not in sys.path:
     sys.path.append(ROOT_DIR)
     sys.path.append(join(ROOT_DIR, 'opmatch'))
-from util import create_graph
+from util import create_graph, utils
 import networkx as nx
 import numpy as np
 from typing import Dict, List, Union
 import pandas as pd
+
 
 def get_min_cost_flow_dic(edge_ls:List, exp_ids:List):
     """Create a digraph from edge_ls and run max_flow_min_cost algorithm.
@@ -57,13 +58,14 @@ def match_parallel(ps:np.array, treatment:np.array, matching_ratio:Union[int,str
         return exp_nexp_dic
     elif matching_ratio=='variable':
         avg_dist0 = np.ones(len(df[df.exposed==1]))*np.inf
+        final_exp_nexp_dic = {}
         while len(df[(df.exposed==1) & (df.matched==0)])!=0:
-            
             edge_ls, exp_ids, nexp_ids = create_graph.create_distance_edge_list_parallel(
                                         df, matching_ratio)
             mincostFlow_dic = get_min_cost_flow_dic(edge_ls, exp_ids)
             exp_nexp_dic = get_exp_nexp_dic(mincostFlow_dic)
             
+            final_exp_nexp_dic = utils.combine_dicts(final_exp_nexp_dic, exp_nexp_dic)
         pass
         """
         edge_ls, exp_ids, nexp_ids = create_graph.create_distance_edge_list_parallel(
