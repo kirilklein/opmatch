@@ -50,7 +50,7 @@ def create_distance_edge_list_parallel(df:pd.DataFrame, matching_ratio:int):
             edge_list_exp_nexp = pool.starmap(compute_ps_abs_dist, mp_input)
     else:
         edge_list_exp_nexp = []
-        for exp_row, exp_id, nexp_row, nexp_id in zip(df_exp.iterrows(), df_nexp.iterrows()):
+        for ((exp_row, exp_id), (nexp_row, nexp_id)) in exp_nexp_comb_ls:
             edge = compute_ps_abs_dist(exp_row, exp_id, nexp_row, nexp_id)
             edge_list_exp_nexp.append(edge)
     edge_ls = init_edge_ls + edge_list_exp_nexp

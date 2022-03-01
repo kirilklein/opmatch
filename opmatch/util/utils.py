@@ -1,6 +1,7 @@
 from collections import defaultdict
 import numpy as np
 import pandas as pd
+from typing import List
 
 def combine_dicts(d1:dict, d2:dict)->dict:
     """Combines two dictionaries,
@@ -23,6 +24,6 @@ def compute_avg_dist(df:pd.DataFrame, exp_nexp_dic:dict)->np.array:
     abs_avg_dist = np.average(np.abs(ps[keys, np.newaxis] - ps[values]), axis=1)
     return abs_avg_dist
 
-def flatten(ls_of_ls:list(list)):
+def flatten(ls_of_ls:List[List]):
     """Flatten list of lists"""
     return [item for sublist in ls_of_ls for item in sublist]
