@@ -36,6 +36,14 @@ def get_exp_nexp_dic(mincostFlow_dic:Dict):
                 exp_nexp_dic[exp] = exp_nexp_dic[exp]+[nexp]
     return exp_nexp_dic
 
+def matching_dic_from_df(df:pd.DataFrame, matching_ratio:int):
+    edge_ls, exp_ids, _ = create_graph.create_distance_edge_list_parallel(
+                                        df, matching_ratio)
+    mincostFlow_dic = get_min_cost_flow_dic(edge_ls, exp_ids)
+    exp_nexp_dic = get_exp_nexp_dic(mincostFlow_dic)
+    return exp_nexp_dic
+
+
 def match_parallel(ps:np.array, treatment:np.array, matching_ratio:Union[int,str]):
     """
     Input:
@@ -51,28 +59,27 @@ def match_parallel(ps:np.array, treatment:np.array, matching_ratio:Union[int,str
     df = pd.DataFrame(np.transpose(np.stack([ps, treatment, matched])), 
                     columns = ['ps', 'exposed', 'matched'])
     if isinstance(matching_ratio, int):
-        edge_ls, exp_ids, nexp_ids = create_graph.create_distance_edge_list_parallel(
-                                        df, matching_ratio)
-        mincostFlow_dic = get_min_cost_flow_dic(edge_ls, exp_ids)
-        exp_nexp_dic = get_exp_nexp_dic(mincostFlow_dic)
+        exp_nexp_dic = matching_dic_from_df(df, matching_ratio)
         return exp_nexp_dic
+        
     elif matching_ratio=='variable':
         avg_dist0 = np.ones(len(df[df.exposed==1]))*np.inf
         final_exp_nexp_dic = {}
+        i = 0
         while len(df[(df.exposed==1) & (df.matched==0)])!=0:
-            edge_ls, exp_ids, nexp_ids = create_graph.create_distance_edge_list_parallel(
-                                        df, matching_ratio)
-            mincostFlow_dic = get_min_cost_flow_dic(edge_ls, exp_ids)
-            exp_nexp_dic = get_exp_nexp_dic(mincostFlow_dic)
-            avg_dist = utils.compute_avg_dist(df, exp_nexp_dic)
+            i+=1
+            if i==10:
+                print('reached max num of iterations')
+                break
+            exp_nexp_dic = matching_dic_from_df(df, matching_ratio=1)
             final_exp_nexp_dic = utils.combine_dicts(final_exp_nexp_dic, exp_nexp_dic)
-        pass
-        """
-        edge_ls, exp_ids, nexp_ids = create_graph.create_distance_edge_list_parallel(
-                                        treatment, ps, 1)
-        mincostFlow_dic = get_min_cost_flow_dic(edge_ls, exp_ids)
-        exp_nexp_dic = get_exp_nexp_dic(mincostFlow_dic)
-        """
+            exp_ids = np.array(list(exp_nexp_dic.keys()))
+            avg_dist = utils.compute_avg_dist(df, exp_nexp_dic)
+            matched_mask = avg_dist>avg_dist0
+            matched_exp = exp_ids[matched_mask]
+            df.matched[matched_exp] = 1
+            avg_dist0 = avg_dist
+        return final_exp_nexp_dic
     elif matching_ratio=='full':
         pass
         
