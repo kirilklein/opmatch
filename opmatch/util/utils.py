@@ -8,7 +8,10 @@ def combine_dicts(d1:dict, d2:dict)->dict:
     dd = defaultdict(list)
     for d in (d1, d2): # you can list as many input dicts as you want here
         for key, value in d.items():
-            dd[key].append(value)
+            if isinstance(value, list):
+                dd[key] = dd[key] + value
+            else:
+                dd[key].append(value)
     return dd
     
 def compute_avg_dist(df:pd.DataFrame, exp_nexp_dic:dict)->np.array:
