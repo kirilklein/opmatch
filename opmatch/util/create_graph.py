@@ -26,7 +26,7 @@ def create_initial_edge_list(unexp_ids:List[int],
     edge_list = create_source_unexp_edges(unexp_ids)
     return append_case_sink_edges(edge_list, exposed_ids, k)
 
-def compute_ps_abs_dist(exp_row, exp_id, nexp_row, nexp_id, dist_multiplier=1e5):
+def compute_ps_abs_dist(exp_row, exp_id, nexp_row, nexp_id, dist_multiplier=1e3):
     """Helper function for create_distance_edge_list_parallel"""
     ps_abs_dist_int = int(np.abs(exp_row.ps-nexp_row.ps)*dist_multiplier)
     return (nexp_id, exp_id, {'capacity':1, 'weight':ps_abs_dist_int})
@@ -45,8 +45,14 @@ def create_distance_edge_list_parallel(df:pd.DataFrame, matching_ratio:int):
     exp_nexp_comb_ls = list(itertools.product(exp_list, nexp_list))
     mp_input = [(exp_row, exp_id, nexp_row, nexp_id) \
         for ((exp_row, exp_id), (nexp_row, nexp_id)) in exp_nexp_comb_ls]
-    with mp.Pool() as pool:
-        edge_list_exp_nexp = pool.starmap(compute_ps_abs_dist, mp_input)
+    if matching_ratio!=1:
+        with mp.Pool() as pool:
+            edge_list_exp_nexp = pool.starmap(compute_ps_abs_dist, mp_input)
+    else:
+        edge_list_exp_nexp = []
+        for exp_row, exp_id, nexp_row, nexp_id in zip(df_exp.iterrows(), df_nexp.iterrows()):
+            edge = compute_ps_abs_dist(exp_row, exp_id, nexp_row, nexp_id)
+            edge_list_exp_nexp.append(edge)
     edge_ls = init_edge_ls + edge_list_exp_nexp
     return edge_ls, exp_ids, nexp_ids
 

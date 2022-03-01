@@ -74,10 +74,12 @@ def match_parallel(ps:np.array, treatment:np.array, matching_ratio:Union[int,str
             exp_nexp_dic = matching_dic_from_df(df, matching_ratio=1)
             final_exp_nexp_dic = utils.combine_dicts(final_exp_nexp_dic, exp_nexp_dic)
             exp_ids = np.array(list(exp_nexp_dic.keys()))
+            matched_nexp = utils.flatten(list(exp_nexp_dic.values()))
             avg_dist = utils.compute_avg_dist(df, exp_nexp_dic)
             matched_mask = avg_dist>avg_dist0
             matched_exp = exp_ids[matched_mask]
             df.matched[matched_exp] = 1
+            df.matched[matched_nexp] = 1
             avg_dist0 = avg_dist
         return final_exp_nexp_dic
     elif matching_ratio=='full':

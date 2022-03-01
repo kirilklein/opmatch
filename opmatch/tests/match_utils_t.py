@@ -11,6 +11,6 @@ X, y, ps = create_test_data.get_test_data(df=False, num_pat=30, num_var=3, pexp=
 
 if __name__ == '__main__':
     exp_nexp_dic = match_utils.match_parallel(ps, treatment=y, matching_ratio='variable')
-    vis.plot_matching(ps, exp_nexp_dic, save=True,)
+    vis.plot_matching(ps, exp_nexp_dic, save=True,figname='tests\\test_match_parallel.png')
     print(exp_nexp_dic)
 

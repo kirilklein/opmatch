@@ -22,3 +22,7 @@ def compute_avg_dist(df:pd.DataFrame, exp_nexp_dic:dict)->np.array:
     ps = df.ps.to_numpy()
     abs_avg_dist = np.average(np.abs(ps[keys, np.newaxis] - ps[values]), axis=1)
     return abs_avg_dist
+
+def flatten(ls_of_ls:list(list)):
+    """Flatten list of lists"""
+    return [item for sublist in ls_of_ls for item in sublist]
