@@ -64,7 +64,7 @@ def match_parallel(ps:np.array, treatment:np.array, matching_ratio:Union[int,str
                                         df, matching_ratio)
             mincostFlow_dic = get_min_cost_flow_dic(edge_ls, exp_ids)
             exp_nexp_dic = get_exp_nexp_dic(mincostFlow_dic)
-            
+            avg_dist = utils.compute_avg_dist(df, exp_nexp_dic)
             final_exp_nexp_dic = utils.combine_dicts(final_exp_nexp_dic, exp_nexp_dic)
         pass
         """
