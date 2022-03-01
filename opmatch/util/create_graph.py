@@ -31,16 +31,15 @@ def compute_ps_abs_dist(exp_row, exp_id, nexp_row, nexp_id, dist_multiplier=1e5)
     ps_abs_dist_int = int(np.abs(exp_row.ps-nexp_row.ps)*dist_multiplier)
     return (nexp_id, exp_id, {'capacity':1, 'weight':ps_abs_dist_int})
 
-def create_distance_edge_list_parallel(treatment:np.array, ps:np.array, k:int): 
-    """treatment: boolean np.array (treatment/no treatment)
+def create_distance_edge_list_parallel(df:pd.DataFrame, matching_ratio:int): 
+    """df: pd.DataFram
+    treatment: boolean np.array (treatment/no treatment)
        ps: float np.array propensity scores"""
-    df = pd.DataFrame(np.transpose(np.stack([ps, treatment])), 
-                    columns = ['ps', 'exposed'])
-    df_exp = df[df['exposed']==1]
-    df_nexp = df[df['exposed']==0]
+    df_exp = df[(df.exposed==1) & (df.matched==0)]
+    df_nexp = df[(df.exposed==0) & (df.matched==0)]
     exp_ids = df_exp.index
     nexp_ids = df_nexp.index
-    init_edge_ls = create_initial_edge_list(nexp_ids, exp_ids, k)
+    init_edge_ls = create_initial_edge_list(nexp_ids, exp_ids, matching_ratio)
     exp_list = [(exp_row, exp_id) for exp_id, exp_row in df_exp.iterrows()]
     nexp_list = [(nexp_row, nexp_id) for nexp_id, nexp_row in df_nexp.iterrows()]
     exp_nexp_comb_ls = list(itertools.product(exp_list, nexp_list))

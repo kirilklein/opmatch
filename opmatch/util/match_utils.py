@@ -49,17 +49,21 @@ def match_parallel(ps:np.array, treatment:np.array, matching_ratio:Union[int,str
     matched = np.zeros(len(ps))
     df = pd.DataFrame(np.transpose(np.stack([ps, treatment, matched])), 
                     columns = ['ps', 'exposed', 'matched'])
-    df_exp = df[df['exposed']==1]
-    df_nexp = df[df['exposed']==0]
-    exp_ids = df_exp.index
-    nexp_ids = df_nexp.index
     if isinstance(matching_ratio, int):
         edge_ls, exp_ids, nexp_ids = create_graph.create_distance_edge_list_parallel(
-                                        treatment, ps, matching_ratio)
+                                        df, matching_ratio)
         mincostFlow_dic = get_min_cost_flow_dic(edge_ls, exp_ids)
         exp_nexp_dic = get_exp_nexp_dic(mincostFlow_dic)
         return exp_nexp_dic
     elif matching_ratio=='variable':
+        avg_dist0 = np.ones(len(df[df.exposed==1]))*np.inf
+        while len(df[(df.exposed==1) & (df.matched==0)])!=0:
+            
+            edge_ls, exp_ids, nexp_ids = create_graph.create_distance_edge_list_parallel(
+                                        df, matching_ratio)
+            mincostFlow_dic = get_min_cost_flow_dic(edge_ls, exp_ids)
+            exp_nexp_dic = get_exp_nexp_dic(mincostFlow_dic)
+            
         pass
         """
         edge_ls, exp_ids, nexp_ids = create_graph.create_distance_edge_list_parallel(
