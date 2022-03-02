@@ -62,7 +62,10 @@ def match_parallel(ps:np.array, treatment:np.array, matching_ratio:Union[int,str
     if isinstance(matching_ratio, int):
         exp_nexp_dic = matching_dic_from_df(df, matching_ratio)
         return exp_nexp_dic
-        
+    elif matching_ratio=='pair':
+        matching_ratio=1  
+        exp_nexp_dic = matching_dic_from_df(df, matching_ratio)
+        return exp_nexp_dic
     elif matching_ratio=='variable':
         avg_dist0 = np.ones(len(df[df.exposed==1]))*np.inf
         final_exp_nexp_dic = {}
