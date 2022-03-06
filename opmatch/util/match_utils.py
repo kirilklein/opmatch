@@ -37,17 +37,31 @@ def get_exp_nexp_dic(mincostFlow_dic:Dict):
                 exp_nexp_dic[exp] = exp_nexp_dic[exp]+[nexp]
     return exp_nexp_dic
 
-def matching_dic_from_df(df:pd.DataFrame, matching_ratio:int):
+def matching_dic_from_df(df:pd.DataFrame, matching_ratio:Union[int,str],
+                        matching_ratio_dic:Union[dict, None]):
     edge_ls, exp_ids, _ = create_graph.create_distance_edge_list_parallel(
-                                        df, matching_ratio)
+                                        df, matching_ratio, matching_ratio_dic)
     mincostFlow_dic = get_min_cost_flow_dic(edge_ls, exp_ids)
     exp_nexp_dic = get_exp_nexp_dic(mincostFlow_dic)
     return exp_nexp_dic
 
-def entire_number_matching():
-    
+def get_matching_ratio_dic(df, matching_ratio:str, 
+                        min_matching_ratio:Union[int, None],
+                        max_matching_ratio:Union[int, None]):
+    df_exp = df[df.exposed==1]
+    if matching_ratio=='entire_number':
+        df_exp['matching_ratio'] = df_exp.ps.map(lambda x: int((1-x)/x))
+    else:
+        assert False, f'{matching_ratio} matching not implemented yet'
+    df_exp.matching_ratio = df_exp.matching_ratio.clip(
+        upper=max_matching_ratio, lower=min_matching_ratio) 
+    matching_ratio_dic = pd.Series(
+        df_exp.matching_ratio.values, index=df_exp.PatientID).to_dict()
+    return matching_ratio_dic
+
 
 def variable_matching(df):
+    """Variable matching, match until some criterion is met (mean distance increases)"""
     avg_dist0 = np.ones(len(df[df.exposed==1]))*np.inf
     final_exp_nexp_dic = {}
     i = 0
@@ -76,7 +90,8 @@ def variable_matching(df):
     
 
 def match_parallel(ps:np.array, treatment:np.array, matching_ratio:Union[int,str],
-    max_matching_ratio:Union[int, type(None)]=None):
+    min_matching_ratio:Union[int, None]=None,
+    max_matching_ratio:Union[int, None]=None):
     """
     Input:
         ps: propensity scores ()
@@ -103,7 +118,10 @@ def match_parallel(ps:np.array, treatment:np.array, matching_ratio:Union[int,str
         return final_exp_nexp_dic
     elif matching_ratio=='entire_number':
         "https://sci-hub.mksa.top/https://doi.org/10.1002/sim.6593"
-        pass
+        matching_ratio_dic = get_matching_ratio_dic(df, 
+            matching_ratio, min_matching_ratio, max_matching_ratio)
+        exp_nexp_dic = matching_dic_from_df(df, 
+            matching_ratio, matching_ratio_dic)
     elif matching_ratio=='fine_balance':
         pass
     elif matching_ratio=='full':

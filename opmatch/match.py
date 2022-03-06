@@ -35,9 +35,12 @@ def match(ps:np.array, treatment:np.array, matching_ratio:Union[int, str]):
             "matching ratio too high, not enough untreated per treated subjects" , 
             stacklevel=1)
     elif matching_ratio=='variable':
-        print("Variable matching ratio: Additional controls are matched until matching ratio stops decreasing")
+        assert False, f'{matching_ratio} matching_ratio not available right now'
+        #print("Variable matching ratio: Additional controls are matched until some criterion is met")
     elif matching_ratio=='full':
         assert False, "Full matching not implemented yet"
+    elif matching_ratio=='entire_number':
+        print("Matching ratio based on entire number")
     else:
         assert False, "Matching ratio should be integer, 'variable' or 'full' "
     ps_handle, ps_path = tempfile.mkstemp(suffix='.npy')
