@@ -8,11 +8,12 @@ import create_test_data
 from util import match_utils, vis
 import numpy as np
 X, y, ps = create_test_data.get_test_data(df=False, num_pat=50, num_var=3, pexp=0.2)
-y = np.array([1,1,0,0,0,0,0,0])
-ps = np.array([.1, .5, .11, .1101, .51, .51001, .110001, .8])
-print('exposed: ', np.argwhere(y==1))
+#y = np.array([1,1,0,0,0,0,0,0])
+#ps = np.array([.1, .5, .11, .1101, .51, .51001, .110001, .8])
+#print('exposed: ', np.argwhere(y==1))
 if __name__ == '__main__':
-    exp_nexp_dic = match_utils.match_parallel(ps, treatment=y, matching_ratio='entire_number')
+    exp_nexp_dic = match_utils.match_parallel(ps, treatment=y, matching_ratio='entire_number',
+        min_matching_ratio=1, max_matching_ratio=4)
     vis.plot_matching(ps, exp_nexp_dic, save=True,figname='opmatch\\tests\\test_match_parallel.png',
     show=False)
     print(exp_nexp_dic)

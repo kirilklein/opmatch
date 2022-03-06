@@ -56,7 +56,7 @@ def get_matching_ratio_dic(df, matching_ratio:str,
     df_exp.matching_ratio = df_exp.matching_ratio.clip(
         upper=max_matching_ratio, lower=min_matching_ratio) 
     matching_ratio_dic = pd.Series(
-        df_exp.matching_ratio.values, index=df_exp.PatientID).to_dict()
+        df_exp.matching_ratio.values, index=df_exp.index).to_dict()
     return matching_ratio_dic
 
 
@@ -96,7 +96,8 @@ def match_parallel(ps:np.array, treatment:np.array, matching_ratio:Union[int,str
     Input:
         ps: propensity scores ()
         treatment: boolean array 
-        matching ratio: matching coefficient, if None: variable matching
+        matching ratio: matching coefficient, or matching_type
+            pair, full, entire_number, fine_balance
     Returns:
         exp_nexp_dic: keys-exposed patients
                       values-corresponding matched unexposed patients
@@ -122,6 +123,7 @@ def match_parallel(ps:np.array, treatment:np.array, matching_ratio:Union[int,str
             matching_ratio, min_matching_ratio, max_matching_ratio)
         exp_nexp_dic = matching_dic_from_df(df, 
             matching_ratio, matching_ratio_dic)
+        return exp_nexp_dic
     elif matching_ratio=='fine_balance':
         pass
     elif matching_ratio=='full':
