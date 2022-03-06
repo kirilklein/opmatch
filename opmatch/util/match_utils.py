@@ -1,4 +1,5 @@
 import os, sys
+from re import L
 from os.path import join
 ROOT_DIR = os.path.abspath(os.curdir)
 if ROOT_DIR not in sys.path:
@@ -43,6 +44,36 @@ def matching_dic_from_df(df:pd.DataFrame, matching_ratio:int):
     exp_nexp_dic = get_exp_nexp_dic(mincostFlow_dic)
     return exp_nexp_dic
 
+def entire_number_matching():
+    
+
+def variable_matching(df):
+    avg_dist0 = np.ones(len(df[df.exposed==1]))*np.inf
+    final_exp_nexp_dic = {}
+    i = 0
+    while len(df[(df.exposed==1) & (df.matched==0)])!=0:
+        if i==10:
+            print('reached max num of iterations')
+            break
+        exp_nexp_dic = matching_dic_from_df(df, matching_ratio=1)
+        
+        exp_ids = np.array(list(exp_nexp_dic.keys()))
+        matched_nexp = utils.flatten(list(exp_nexp_dic.values()))
+        avg_dist = utils.compute_avg_dist(df, exp_nexp_dic)
+        matched_mask = avg_dist>avg_dist0
+        if i!=0:
+            unmatched_inds = np.argwhere(~matched_mask)
+            print('include indices:', unmatched_inds)
+            print(matched_mask)
+            exp_nexp_dic = {k:v for k,v in exp_nexp_dic.items() if k in list(unmatched_inds)}
+        final_exp_nexp_dic = utils.combine_dicts(final_exp_nexp_dic, exp_nexp_dic)
+        matched_exp = exp_ids[matched_mask]
+        df.matched[matched_exp] = 1
+        df.matched[matched_nexp] = 1
+        avg_dist0 = avg_dist
+        i+=1
+    return final_exp_nexp_dic
+    
 
 def match_parallel(ps:np.array, treatment:np.array, matching_ratio:Union[int,str],
     max_matching_ratio:Union[int, type(None)]=None):
@@ -67,30 +98,8 @@ def match_parallel(ps:np.array, treatment:np.array, matching_ratio:Union[int,str
         exp_nexp_dic = matching_dic_from_df(df, matching_ratio)
         return exp_nexp_dic
     elif matching_ratio=='variable':
-        avg_dist0 = np.ones(len(df[df.exposed==1]))*np.inf
-        final_exp_nexp_dic = {}
-        i = 0
-        while len(df[(df.exposed==1) & (df.matched==0)])!=0:
-            if i==10:
-                print('reached max num of iterations')
-                break
-            exp_nexp_dic = matching_dic_from_df(df, matching_ratio=1)
-            
-            exp_ids = np.array(list(exp_nexp_dic.keys()))
-            matched_nexp = utils.flatten(list(exp_nexp_dic.values()))
-            avg_dist = utils.compute_avg_dist(df, exp_nexp_dic)
-            matched_mask = avg_dist>avg_dist0
-            if i!=0:
-                unmatched_inds = np.argwhere(~matched_mask)
-                print('include indices:', unmatched_inds)
-                print(matched_mask)
-                exp_nexp_dic = {k:v for k,v in exp_nexp_dic.items() if k in list(unmatched_inds)}
-            final_exp_nexp_dic = utils.combine_dicts(final_exp_nexp_dic, exp_nexp_dic)
-            matched_exp = exp_ids[matched_mask]
-            df.matched[matched_exp] = 1
-            df.matched[matched_nexp] = 1
-            avg_dist0 = avg_dist
-            i+=1
+        print("Ubiquitous implementation, mean distance will always increase")
+        final_exp_nexp_dic = variable_matching(df)
         return final_exp_nexp_dic
     elif matching_ratio=='entire_number':
         "https://sci-hub.mksa.top/https://doi.org/10.1002/sim.6593"

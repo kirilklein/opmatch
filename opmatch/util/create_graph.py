@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Union
 import networkx as nx
 import pandas as pd
 import numpy as np
@@ -12,26 +12,35 @@ def create_source_unexp_edges(unexp_ids:List[int])->List[tuple]:
          for unexp_id in unexp_ids]
     return edge_list
 
+
+
 def append_case_sink_edges(edge_list:List[tuple], exposed_ids:List[int], 
-                        k:int)->List[tuple]:
+                        matching_ratio:Union[int, str], 
+                        entire_number_dic:Union[dict, type(None)])->List[tuple]:
     """Append edges to edge_list which the exposed to the sink, 
-    with capacities that result in 1:k matching."""
-    append_list = [(exp_id, 'sink', {'capacity':k, 'weight':0})\
-        for exp_id in exposed_ids]
+    with capacities that result in constant 1:k matching or entire number matching."""
+    if isinstance(matching_ratio, int):
+        append_list = [(exp_id, 'sink', {'capacity':matching_ratio, 'weight':0})\
+            for exp_id in exposed_ids]
+    elif matching_ratio=='entire_number':
+        assert isinstance(entire_number_dic, dict), 'entire_number_dic is not a dictionary'
+        pass
     return edge_list + append_list
 
 def create_initial_edge_list(unexp_ids:List[int], 
-                        exposed_ids:List[int], k:int)->List[tuple]:
+                        exposed_ids:List[int], 
+                        matching_ratio:Union[int, str])->List[tuple]:
     """Create initial edge list, without connections between exposed and unexposed."""
     edge_list = create_source_unexp_edges(unexp_ids)
-    return append_case_sink_edges(edge_list, exposed_ids, k)
+    return append_case_sink_edges(edge_list, exposed_ids, matching_ratio)
 
 def compute_ps_abs_dist(exp_row, exp_id, nexp_row, nexp_id, dist_multiplier=1e3):
     """Helper function for create_distance_edge_list_parallel"""
     ps_abs_dist_int = int(np.abs(exp_row.ps-nexp_row.ps)*dist_multiplier)
     return (nexp_id, exp_id, {'capacity':1, 'weight':ps_abs_dist_int})
 
-def create_distance_edge_list_parallel(df:pd.DataFrame, matching_ratio:int): 
+def create_distance_edge_list_parallel(df:pd.DataFrame, 
+    matching_ratio:Union[int, str]): 
     """df: pd.DataFram
     treatment: boolean np.array (treatment/no treatment)
        ps: float np.array propensity scores"""

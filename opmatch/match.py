@@ -11,7 +11,7 @@ import numpy as np
 import tempfile
 import warnings
 from typing import Union
-match_script = join(opmatch_dir, 'util', 'match_par.py')
+
 
 def match(ps:np.array, treatment:np.array, matching_ratio:Union[int, str]):
     """
@@ -46,6 +46,7 @@ def match(ps:np.array, treatment:np.array, matching_ratio:Union[int, str]):
     os.close(ps_handle)
     np.save(trt_path, treatment)
     os.close(trt_handle)
+    match_script = join(opmatch_dir, 'util', 'match_par.py')
     dic_path = sp.check_output(['python', match_script, ps_path,
                     trt_path, str(matching_ratio)],stderr=sp.STDOUT).decode(encoding="utf-8")
     dic_path = dic_path[:-2]
