@@ -12,5 +12,10 @@ from util.pairwise_dist_cython import pairwise_distance
 
 #r = np.array([random.randrange(1, 1000) for _ in range(0, 1000)], dtype=float)
 r = np.array([1, 0, 3.])
+lr = len(r)
 pd = pairwise_distance(r)
-print(pd[:10])
+ind = np.triu_indices(lr)
+values = np.arange(lr**2).reshape(lr,lr)[ind]
+result = np.zeros((lr,lr),int)
+result[ind]=pd
+print(result)
