@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-
+from scipy.optimize import linear_sum_assignment
 
 def pairwise_abs_dist(a:np.ndarray, b:np.ndarray):
     """Compute absolute distance matrix.
@@ -40,6 +40,10 @@ def expand_dist_mat(dist_mat:np.ndarray, min_mr:int,
     final_dist_mat = np.concatenate([exp_nexp_dmat, exp_mat], axis=1)
     return final_dist_mat
 
+def get_nexp_exp_dic(match_result):
+    row_ind, col_ind = match_result
+    pass
+
 
 def match(df:pd.DataFrame, min_mr:int, 
          max_mr:int, n_controls:int):
@@ -59,4 +63,7 @@ def match(df:pd.DataFrame, min_mr:int,
             dist_mat, min_mr, 
             max_mr, n_exp, n_nexp,
             n_controls)
-    return exp_nexp_dmat
+
+    match_result = linear_sum_assignment(exp_nexp_dmat)
+    return match_result
+
