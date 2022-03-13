@@ -40,29 +40,35 @@ def create_initial_edge_list(unexp_ids:List[int],
     return edge_list
 
 
-def pairwise_abs_dist(a, b, dist_multiplier=1e3):
-    """Compute absolute distance matrix
+def pairwise_int_abs_dist(a, b, dist_multiplier=1e3):
+    """Compute absolute distance matrix multiplied by dist_multiplier and rounded to integre.
     Input: 1d arrays a and b
-    Returns: len(a)xlen(b) distance matrix
+    Returns: len(b)xlen(a) distance matrix
     """
     return np.floor(np.abs(a[np.newaxis,:] - b[:, np.newaxis])*dist_multiplier)
 
 def create_exp_nexp_edge_ls(exp_ids, nexp_ids, exp_ps, nexp_ps):
-    
-    pdist_mat = pairwise_abs_dist(nexp_ps, exp_ps)
+    """returns: 
+        list of tuples (exp_id, nexp_id, {'capacity':1, 'weight':distance}
+    """
+    pdist_mat = pairwise_int_abs_dist(nexp_ps, exp_ps)
     pdist = np.ndarray.flatten(pdist_mat)
     cap_weight_ls = [{'capacity':1, 'weight':dist} for dist in pdist]
     exp_ids_comb, nexp_ids_comb= zip(*itertools.product(exp_ids, nexp_ids))
     exp_nexp_edge_ls = list(zip(exp_ids_comb,nexp_ids_comb, cap_weight_ls))
     return exp_nexp_edge_ls
 
-
 def create_distance_edge_list_parallel(df:pd.DataFrame, 
     matching_ratio:Union[int, str],
     matching_ratio_dic:Union[dict, None]=None)->tuple: 
-    """df: pd.DataFram
+    """df: pd.DataFrame
+    with exposed, matched(maybe obsolete) and ps columns
     treatment: boolean np.array (treatment/no treatment)
-       ps: float np.array propensity scores"""
+    returns: 
+        edge_list: list of tuples (exp_id, nexp_id, {'capacity':1, 'weight':distance}
+        exp_ids
+        nexp_ids
+    """
     df_exp = df[(df.exposed==1) & (df.matched==0)]
     df_nexp = df[(df.exposed==0) & (df.matched==0)]
     exp_ids = df_exp.index
