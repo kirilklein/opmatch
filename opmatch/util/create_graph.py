@@ -3,7 +3,6 @@ import networkx as nx
 import pandas as pd
 import numpy as np
 import itertools
-import multiprocessing as mp
 
 
 def create_source_unexp_edges(unexp_ids:List[int])->List[tuple]:
@@ -40,10 +39,23 @@ def create_initial_edge_list(unexp_ids:List[int],
                                     matching_ratio_dic)
     return edge_list
 
-def compute_ps_abs_dist(exp_row, exp_id, nexp_row, nexp_id, dist_multiplier=1e3):
-    """Helper function for create_distance_edge_list_parallel"""
-    ps_abs_dist_int = np.floorS(np.abs(exp_row.ps-nexp_row.ps)*dist_multiplier)
-    return (nexp_id, exp_id, {'capacity':1, 'weight':ps_abs_dist_int})
+
+def pairwise_abs_dist(a, b, dist_multiplier=1e3):
+    """Compute absolute distance matrix
+    Input: 1d arrays a and b
+    Returns: len(a)xlen(b) distance matrix
+    """
+    return np.floor(np.abs(a[np.newaxis,:] - b[:, np.newaxis])*dist_multiplier)
+
+def create_exp_nexp_edge_ls(exp_ids, nexp_ids, exp_ps, nexp_ps):
+    
+    pdist_mat = pairwise_abs_dist(nexp_ps, exp_ps)
+    pdist = np.ndarray.flatten(pdist_mat)
+    cap_weight_ls = [{'capacity':1, 'weight':dist} for dist in pdist]
+    exp_ids_comb, nexp_ids_comb= zip(*itertools.product(exp_ids, nexp_ids))
+    exp_nexp_edge_ls = list(zip(exp_ids_comb,nexp_ids_comb, cap_weight_ls))
+    return exp_nexp_edge_ls
+
 
 def create_distance_edge_list_parallel(df:pd.DataFrame, 
     matching_ratio:Union[int, str],
@@ -55,21 +67,11 @@ def create_distance_edge_list_parallel(df:pd.DataFrame,
     df_nexp = df[(df.exposed==0) & (df.matched==0)]
     exp_ids = df_exp.index
     nexp_ids = df_nexp.index
+    exp_ps = df_exp.ps.to_numpy()
+    nexp_ps = df_nexp.ps.to_numpy()
     init_edge_ls = create_initial_edge_list(nexp_ids, exp_ids, matching_ratio,
                         matching_ratio_dic)
-    exp_list = [(exp_row, exp_id) for exp_id, exp_row in df_exp.iterrows()]
-    nexp_list = [(nexp_row, nexp_id) for nexp_id, nexp_row in df_nexp.iterrows()]
-    exp_nexp_comb_ls = list(itertools.product(exp_list, nexp_list))
-    mp_input = [(exp_row, exp_id, nexp_row, nexp_id) \
-        for ((exp_row, exp_id), (nexp_row, nexp_id)) in exp_nexp_comb_ls]
-    if matching_ratio!=1:
-        with mp.Pool() as pool:
-            edge_list_exp_nexp = pool.starmap(compute_ps_abs_dist, mp_input)
-    else:
-        edge_list_exp_nexp = []
-        for ((exp_row, exp_id), (nexp_row, nexp_id)) in exp_nexp_comb_ls:
-            edge = compute_ps_abs_dist(exp_row, exp_id, nexp_row, nexp_id)
-            edge_list_exp_nexp.append(edge)
+    edge_list_exp_nexp = create_exp_nexp_edge_ls(exp_ids, nexp_ids, exp_ps, nexp_ps)   
     edge_ls = init_edge_ls + edge_list_exp_nexp
     return edge_ls, exp_ids, nexp_ids
 
