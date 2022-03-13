@@ -45,7 +45,7 @@ def pairwise_abs_dist(a, b, dist_multiplier=1e3):
     Input: 1d arrays a and b
     Returns: len(a)xlen(b) distance matrix
     """
-    return np.ndarray.astype(np.abs(a[np.newaxis,:] - b[:, np.newaxis])*dist_multiplier, int)
+    return np.floor(np.abs(a[np.newaxis,:] - b[:, np.newaxis])*dist_multiplier)
 
 def create_exp_nexp_edge_ls(exp_ids, nexp_ids, exp_ps, nexp_ps):
     

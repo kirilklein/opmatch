@@ -42,7 +42,7 @@ def create_initial_edge_list(unexp_ids:List[int],
 
 def compute_ps_abs_dist(exp_row, exp_id, nexp_row, nexp_id, dist_multiplier=1e3):
     """Helper function for create_distance_edge_list_parallel"""
-    ps_abs_dist_int = int(np.abs(exp_row.ps-nexp_row.ps)*dist_multiplier)
+    ps_abs_dist_int = np.floorS(np.abs(exp_row.ps-nexp_row.ps)*dist_multiplier)
     return (nexp_id, exp_id, {'capacity':1, 'weight':ps_abs_dist_int})
 
 def create_distance_edge_list_parallel(df:pd.DataFrame, 
