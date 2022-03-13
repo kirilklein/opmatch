@@ -23,12 +23,23 @@ def create_dist_matrix(exp_ps:np.ndarray, nexp_ps:np.ndarray,
     return dist_mat
 
 def expand_dist_mat(dist_mat:np.ndarray, min_mr:int, 
-                max_mr:int, n_exp:int, n_nexp:int):
+                max_mr:int, n_exp:int, n_nexp:int, 
+                n_controls:int):
     exp_nexp_dmat = np.tile(dist_mat, max_mr)
     exp_nexp_dmat = np.reshape(exp_nexp_dmat, 
                 newshape=(n_exp*max_mr, n_nexp))
-    return exp_nexp_dmat
-    #expanded_dist_mat = np.zeros(shape=(n_exp*max_mr, n_nexp+K))
+    K = n_exp * max_mr - n_controls
+    exp_inf = np.ones(shape=(min_mr, K))*np.inf
+    if (max_mr-min_mr)>=1:
+        exp_zeros = np.zeros(shape=(max_mr-min_mr, K))
+        exp_mat = np.concatenate([exp_inf, exp_zeros],  axis=0)
+    else:
+        exp_mat = exp_inf
+    exp_mat = np.tile(exp_mat, (n_exp,1))
+    exp_mat = np.reshape(exp_mat, newshape=(max_mr*n_exp, K))
+    final_dist_mat = np.concatenate([exp_nexp_dmat, exp_mat], axis=1)
+    return final_dist_mat
+
 
 def match(df:pd.DataFrame, min_mr:int, 
          max_mr:int, n_controls:int):
@@ -46,5 +57,6 @@ def match(df:pd.DataFrame, min_mr:int,
                                 min_mr, max_mr, n_controls)
     exp_nexp_dmat = expand_dist_mat(
             dist_mat, min_mr, 
-            max_mr, n_exp, n_nexp)
+            max_mr, n_exp, n_nexp,
+            n_controls)
     return exp_nexp_dmat
