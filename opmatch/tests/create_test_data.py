@@ -6,7 +6,9 @@ from scipy.stats import norm, bernoulli, uniform
 
 
 
-def get_test_data(df=True, num_pat = 10, num_var = 3, pexp=.5, ):
+def get_test_data(df=True, num_pat = 10, num_var = 3, pexp=.5, random_state=None):
+    if not isinstance(random_state, type(None)):
+        np.random.seed(random_state)
     X = norm.rvs(size=(num_pat, num_var))
     y = bernoulli.rvs(p=pexp , size=num_pat)
     ps = uniform.rvs(size=num_pat)
