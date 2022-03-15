@@ -14,6 +14,7 @@ def expand_dist_mat(dist_mat:np.ndarray, min_mr:int,
     exp_nexp_dmat = np.reshape(exp_nexp_dmat, 
                 newshape=(n_exp*max_mr, n_nexp))
     K = n_exp * max_mr - n_controls
+    assert isinstance(K, int), 'make sure that max_mr and n_controls are integers'
     exp_inf = np.ones(shape=(min_mr, K))*np.inf
     if (max_mr-min_mr)>=1:
         exp_zeros = np.zeros(shape=(max_mr-min_mr, K))
@@ -35,7 +36,6 @@ def get_exp_nexp_dic(match_result:tuple, exp_ids:list,
 
     nexp_exp_dic = {nexp_ids[nexp_num]:rep_exp_ids[exp_num] for nexp_num, exp_num in \
         zip(nexp_nums, exp_nums) if nexp_num<len(nexp_ids)}
-    print(nexp_exp_dic)
     exp_nexp_dic = defaultdict(list)
     for key, value in nexp_exp_dic.items():
         exp_nexp_dic[value].append(key)
@@ -50,11 +50,19 @@ def match(df:pd.DataFrame, min_mr:int,
     df_nexp = df[(df.exposed==0)]
     exp_ids = df_exp.index
     nexp_ids = df_nexp.index
-    exp_ps = df_exp.ps.to_numpy()
-    nexp_ps = df_nexp.ps.to_numpy()
+    
     n_exp = len(exp_ids)
     n_nexp = len(nexp_ids)
+
+    assert n_controls<=n_nexp, f'n_controls>n_nexp={n_nexp}'
+    assert max_mr<=(n_controls-n_exp+1), f'max_mr>(total_controls-n_exp+1)={n_controls-n_exp+1}'
+    assert max_mr>=np.ceil(n_controls/n_exp), f'max_mr<np.ceil(total_controls/n_exp)={np.ceil(n_controls/n_exp)}'
+    assert min_mr<=np.floor(n_controls/n_exp), f'min_mr>np.floor(n_controls/n_exp)={np.floor(n_controls/n_exp)}'
+    assert min_mr>=1, 'min_mr<1'
+    
     if metric=='PS':
+        exp_ps = df_exp.ps.to_numpy()
+        nexp_ps = df_nexp.ps.to_numpy()
         dist_mat = metrics.create_ps_dist_matrix(exp_ps, nexp_ps,n_exp, n_nexp, 
                                 min_mr, max_mr, n_controls)
     elif metric=='Mahalanobis':
