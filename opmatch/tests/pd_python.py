@@ -4,6 +4,7 @@ import itertools
 import networkx as nx
 import timeit
 
+
 exp_ps = np.arange(1,3)*.1
 nexp_ps = np.arange(4,7)*.1
 
@@ -19,7 +20,7 @@ def pairwise_abs_dist(a, b):
     return np.ndarray.astype(np.abs(a[np.newaxis,:] - b[:, np.newaxis])*1e1, int)
 print(pairwise_abs_dist(exp_ps, nexp_ps))
 def create_exp_nexp_edge_ls(exp_ids, nexp_ids, exp_ps, nexp_ps):
-    
+    """Create list with edges between exposed and not exposed"""
     pdist_mat = pairwise_abs_dist(nexp_ps, exp_ps)
     pdist = np.ndarray.flatten(pdist_mat)
     cap_weight_ls = [{'capacity':1, 'weight':dist} for dist in pdist]
