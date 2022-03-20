@@ -5,8 +5,11 @@ if ROOT_DIR not in sys.path:
     sys.path.append(ROOT_DIR)
     sys.path.append(join(ROOT_DIR, 'opmatch'))
 from util import metrics
+from tests import create_test_data
 import numpy as np
 import matplotlib.pyplot as plt
+
+
 
 def test_std_diff_bin():
     x = np.linspace(0,1, 90)
@@ -25,4 +28,11 @@ def test_std_diff_cont():
     plt.contourf(xx, yy, zz)
     plt.colorbar()
     plt.show()
-test_std_diff_cont()
+df = create_test_data.get_test_data(True, 100, 2, 2,pexp=.1, random_state=2)
+df['exposed'] = df.y
+print(df.head())
+def test_gen_mahal(df):
+    metrics.gowers_distance(df)
+
+test_gen_mahal(df)
+#test_std_diff_cont()

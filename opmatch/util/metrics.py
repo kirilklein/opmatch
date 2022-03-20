@@ -1,4 +1,6 @@
 import numpy as np
+from typing import Union
+from scipy.spatial import distance
 
 def pairwise_abs_dist(a:np.ndarray, b:np.ndarray):
     """Compute absolute distance matrix.
