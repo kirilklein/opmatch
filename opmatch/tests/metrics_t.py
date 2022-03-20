@@ -31,8 +31,4 @@ def test_std_diff_cont():
 df = create_test_data.get_test_data(True, 100, 2, 2,pexp=.1, random_state=2)
 df['exposed'] = df.y
 print(df.head())
-def test_gen_mahal(df):
-    metrics.gowers_distance(df)
-
-test_gen_mahal(df)
 #test_std_diff_cont()

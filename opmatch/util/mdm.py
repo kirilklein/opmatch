@@ -4,6 +4,7 @@ from typing import Union
 
 
 def mahalanobis_dist(data, x):
+    """Compute mahalanobis distance of point x to data."""
     C = np.cov(data.T)
     mu = np.mean(data, axis=0)
     IC = la.inv(C)
@@ -11,6 +12,7 @@ def mahalanobis_dist(data, x):
     return np.sqrt(dx.T@IC@dx)
 
 def mahalanobis_const(d1, d2):
+    """Compute mahalanobis distance for continuous variables."""
     mu1 = np.mean(d1, axis=0)
     mu2 = np.mean(d2, axis=0)
     C = np.cov(np.concatenate([d1, d2]).T)
@@ -19,6 +21,13 @@ def mahalanobis_const(d1, d2):
     return np.sqrt(dmu.T@IC@dmu)
 
 def mahalanobis_bin(d1, d2):
+    """Compute mahalanobis distance for binary variables.
+    If for one of the groups the estimated probabilitiy is zero
+        result is the absolute difference between probabilities,
+    if both est. probs are zero result is zero,
+    else: result is given by (p1-p2)*np.log(p1/p2)
+    in the last step we sum over variables.
+        """
     d1 = d1.to_numpy()
     d2 = d2.to_numpy()
     p1 = np.sum(d1, axis=0)/len(d1)
@@ -32,18 +41,26 @@ def mahalanobis_bin(d1, d2):
 
 
 def gen_mahalanobis(df, g1:Union[None, list]=None, g2:Union[None, list]=None)->float:
-    """Takes dataframe and computes gowers coefficient between two groups. 
+    """Takes dataframe and computes generalised mahalanobis distance between the two groups. 
+    Given in the paper:
+        Barhen, Avner, and J. J. Daudin. 
+        "Generalization of the Mahalanobis distance in the mixed case." 
+        Journal of Multivariate Analysis 53.2 (1995): 332-342.
     By default the two groups are exposed==1 and exposed==0
-    Optinally one can pass two lists of indices g1 and g2"""
-    if isinstance(g1, type(None)) or isinstance(g2, type(None)):
-        bin_var_cols = [k for k in df.keys() if k.startswith('b')]
-        cont_var_cols = [k for k in df.keys() if k.startswith('x')]
+    Optinally one can pass two lists of indices g1 and g2.
+    """
+    bin_var_cols = [k for k in df.keys() if k.startswith('b')]
+    cont_var_cols = [k for k in df.keys() if k.startswith('x')]
+    if isinstance(g1, type(None)) or isinstance(g2, type(None)):    
         df1_c = df[cont_var_cols][df.exposed==0]
         df2_c = df[cont_var_cols][df.exposed==1]
         df1_b = df[bin_var_cols][df.exposed==0]
         df2_b = df[bin_var_cols][df.exposed==1]        
     else:
-        pass
+        df1_c = df.loc[g1][cont_var_cols]
+        df2_c = df.loc[g2][cont_var_cols]
+        df1_b = df.loc[g1][bin_var_cols]
+        df2_b = df.loc[g2][bin_var_cols]   
     Jc = mahalanobis_const(df1_c, df2_c)
     Jb = mahalanobis_bin(df1_b, df2_b)
     return Jb + Jc

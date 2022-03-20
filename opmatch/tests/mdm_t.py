@@ -42,8 +42,6 @@ def test_mahalanobis_dist():
     for i, d in enumerate(dists):
         ax.text(data.iloc[i,0], data.iloc[i,1], str(round(d,3)))
     plt.show()
-def test_gen_mahal():
-    J = mdm.gen_mahalanobis(df)
-    return J
-    
-print('mahal dist', test_gen_mahal())
+
+
+print('mahal dist',mdm.gen_mahalanobis(df, ))

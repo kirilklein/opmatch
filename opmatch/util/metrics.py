@@ -18,7 +18,7 @@ def create_ps_dist_matrix(exp_ps:np.ndarray, nexp_ps:np.ndarray,
     return dist_mat
 
 def standardized_difference_bin(p_t:float,p_c:float):
-    """p_t, p_c: estimated prevalence in trated and control group"""
+    """p_t, p_c: estimated prevalence in treated and control group"""
     assert (p_t<=1).all() and (0<=p_t).all() and (0<=p_c).all() and (p_c<=1).all(), 'p_t and p_c must be between 0 and 1'
     num = p_t - p_c
     den = np.sqrt((p_t*(1-p_t)+p_c*(1-p_c))/2)
