@@ -11,7 +11,7 @@ def mahalanobis_dist(data, x):
     dx = x - mu
     return np.sqrt(dx.T@IC@dx)
 
-def mahalanobis_const(d1, d2):
+def mahalanobis_cont(d1, d2):
     """Compute mahalanobis distance for continuous variables."""
     mu1 = np.mean(d1, axis=0)
     mu2 = np.mean(d2, axis=0)
@@ -61,6 +61,6 @@ def gen_mahalanobis(df, g1:Union[None, list]=None, g2:Union[None, list]=None)->f
         df2_c = df.loc[g2][cont_var_cols]
         df1_b = df.loc[g1][bin_var_cols]
         df2_b = df.loc[g2][bin_var_cols]   
-    Jc = mahalanobis_const(df1_c, df2_c)
+    Jc = mahalanobis_cont(df1_c, df2_c)
     Jb = mahalanobis_bin(df1_b, df2_b)
     return Jb + Jc
