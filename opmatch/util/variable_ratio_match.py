@@ -45,7 +45,21 @@ def get_exp_nexp_dic(match_result:tuple, exp_ids:list,
 def match(df:pd.DataFrame, min_mr:int, 
          max_mr:int, n_controls:int, metric:str='PS',
          var_cols:List[str]=None)->dict:
+    """
+    df: has to contain 'exposed' column, 
+        matching dictionary will be returned with dataframe indices
+    min_mr: minimum number of controls per case
+    max_mr: maximum number of controls per case
+    n_controls: total number of controls, if constant matching ratio c desired:
+        min_mr=max_mr=c, n_controls=c*n_cases
+    metric: PS or check https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.distance.cdist.html#scipy.spatial.distance.cdist
+        distances
+    var_cols: if Mahalanobis or Euclidian, columns that will be used for matching
     
+    returns:
+        {case0_id:[control00_id, control01_id,...], 
+        case1_id:[control10_id, control11_id, ...]}
+    """
     df_exp = df[(df.exposed==1)]
     df_nexp = df[(df.exposed==0)]
     exp_ids = df_exp.index
@@ -65,13 +79,11 @@ def match(df:pd.DataFrame, min_mr:int,
         nexp_ps = df_nexp.ps.to_numpy()
         dist_mat = metrics.create_ps_dist_matrix(exp_ps, nexp_ps,n_exp, n_nexp, 
                                 min_mr, max_mr, n_controls)
-    elif metric=='Mahalanobis':
+    else:
         assert not isinstance(var_cols, type(None)), 'You need to specify var_cols in order to use Mahalanobis as a metric.'
         X_exp = df_exp[var_cols]
         X_nexp = df_nexp[var_cols]
-        dist_mat = cdist(X_nexp, X_exp)
-    else:
-        assert False, f"Metric {metric} not implemented."
+        dist_mat = cdist(X_nexp, X_exp, metric=metric)
     exp_nexp_dmat = expand_dist_mat(
             dist_mat, min_mr, 
             max_mr, n_exp, n_nexp,
