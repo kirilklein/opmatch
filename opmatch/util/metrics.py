@@ -30,3 +30,10 @@ def standardized_difference_con(mu_t:float,mu_c:float, s_t:float, s_c:float):
     den = np.sqrt((s_t**2+s_c**2)/2)
     return np.abs(num/den)
 
+def gowers_distance(df, weights=None):
+    bin_var_cols = [k for k in df.keys() if k.startswith('b')]
+    cont_var_cols = [k for k in df.keys() if k.startswith('x')]
+    X_range = df[cont_var_cols].max() - df[cont_var_cols].min()
+    X = df[cont_var_cols]
+    Y = df[bin_var_cols]
+    assert False, "Not implemented yet, https://arxiv.org/ftp/arxiv/papers/2101/2101.02481.pdf"
