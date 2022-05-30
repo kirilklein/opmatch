@@ -42,23 +42,11 @@ def get_exp_nexp_dic(match_result:tuple, exp_ids:list,
     return exp_nexp_dic
 
 
-def match(df:pd.DataFrame, min_mr:int, 
-         max_mr:int, n_controls:int, metric:str='PS',
-         var_cols:List[str]=None)->dict:
+def match(df:pd.DataFrame)->dict:
     """
     df: has to contain 'exposed' column, 
         matching dictionary will be returned with dataframe indices
-    min_mr: minimum number of controls per case
-    max_mr: maximum number of controls per case
-    n_controls: total number of controls, if constant matching ratio c desired:
-        min_mr=max_mr=c, n_controls=c*n_cases
-    metric: PS or check https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.distance.cdist.html#scipy.spatial.distance.cdist
-        distances
-    var_cols: if Mahalanobis or Euclidian, columns that will be used for matching
-    
-    returns:
-        {case0_id:[control00_id, control01_id,...], 
-        case1_id:[control10_id, control11_id, ...]}
+   
     """
     df_exp = df[(df.exposed==1)]
     df_nexp = df[(df.exposed==0)]
@@ -67,14 +55,12 @@ def match(df:pd.DataFrame, min_mr:int,
     
     n_exp = len(exp_ids)
     n_nexp = len(nexp_ids)
-
-    assert n_controls<=n_nexp, f'n_controls>n_nexp={n_nexp}'
-    # TODO: think about the line below
-    #assert max_mr<=(n_controls-n_exp+1), f'max_mr>(total_controls-n_exp+1)={n_controls-n_exp+1}'
-    assert max_mr>=np.ceil(n_controls/n_exp), f'max_mr<np.ceil(total_controls/n_exp)={np.ceil(n_controls/n_exp)}'
-    assert min_mr<=np.floor(n_controls/n_exp), f'min_mr>np.floor(n_controls/n_exp)={np.floor(n_controls/n_exp)}'
-    assert min_mr>=1, 'min_mr<1'
+    matching_ratio = np.ceil(((1-df_exp.ps)/df_exp.ps)).astype(int)
     
+    print(matching_ratio)
+    assert np.sum(matching_ratio)<=n_nexp, f'n_controls>n_nexp={n_nexp}'
+    
+    assert False
     if metric=='PS':
         exp_ps = df_exp.ps.to_numpy()
         nexp_ps = df_nexp.ps.to_numpy()
