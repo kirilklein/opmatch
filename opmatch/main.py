@@ -1,13 +1,8 @@
 import os, sys
 from os.path import join
-ROOT_DIR = os.path.abspath(os.curdir)
-opmatch_dir = join(ROOT_DIR, 'opmatch')
-if ROOT_DIR not in sys.path:
-    sys.path.append(ROOT_DIR)
-    sys.path.append(opmatch_dir)
 from typing import List
 import pandas as pd
-from util import variable_ratio_match, entire_number_match
+from opmatch.util import variable_ratio_match, entire_number_match
 
 def match(df:pd.DataFrame, matching_ratio:int=None, min_mr:int=None, 
          max_mr:int=None, n_controls:int=None, metric:str='PS',

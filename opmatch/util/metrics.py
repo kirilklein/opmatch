@@ -1,6 +1,4 @@
 import numpy as np
-from typing import Union
-from scipy.spatial import distance
 
 def pairwise_abs_dist(a:np.ndarray, b:np.ndarray):
     """Compute absolute distance matrix.
@@ -17,7 +15,7 @@ def create_ps_dist_matrix(exp_ps:np.ndarray, nexp_ps:np.ndarray,
     dist_mat = pairwise_abs_dist(exp_ps, nexp_ps)
     return dist_mat
 
-def standardized_difference_bin(p_t:float,p_c:float):
+def standardized_difference_bin(p_t:float, p_c:float):
     """p_t, p_c: estimated prevalence in treated and control group"""
     assert (p_t<=1).all() and (0<=p_t).all() and (0<=p_c).all() and (p_c<=1).all(), 'p_t and p_c must be between 0 and 1'
     num = p_t - p_c

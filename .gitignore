@@ -127,3 +127,4 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+/opmatch/tests/obsolete/pd_python.py

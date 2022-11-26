@@ -3,7 +3,6 @@ import pandas as pd
 from scipy.optimize import linear_sum_assignment
 from collections import defaultdict
 from scipy.spatial.distance import cdist
-from typing import List
 import metrics
 
 
@@ -48,6 +47,7 @@ def match(df:pd.DataFrame)->dict:
         matching dictionary will be returned with dataframe indices
    
     """
+    assert False, 'This function is not ready yet'
     df_exp = df[(df.exposed==1)]
     df_nexp = df[(df.exposed==0)]
     exp_ids = df_exp.index
