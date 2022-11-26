@@ -46,16 +46,16 @@ def gen_mahalanobis(df, g1:Union[None, list]=None, g2:Union[None, list]=None)->f
         Barhen, Avner, and J. J. Daudin. 
         "Generalization of the Mahalanobis distance in the mixed case." 
         Journal of Multivariate Analysis 53.2 (1995): 332-342.
-    By default the two groups are exposed==1 and exposed==0
+    By default the two groups are case==1 and case==0
     Optinally one can pass two lists of indices g1 and g2.
     """
     bin_var_cols = [k for k in df.keys() if k.startswith('b')]
     cont_var_cols = [k for k in df.keys() if k.startswith('x')]
     if isinstance(g1, type(None)) or isinstance(g2, type(None)):    
-        df1_c = df[cont_var_cols][df.exposed==0]
-        df2_c = df[cont_var_cols][df.exposed==1]
-        df1_b = df[bin_var_cols][df.exposed==0]
-        df2_b = df[bin_var_cols][df.exposed==1]        
+        df1_c = df[cont_var_cols][df.case==0]
+        df2_c = df[cont_var_cols][df.case==1]
+        df1_b = df[bin_var_cols][df.case==0]
+        df2_b = df[bin_var_cols][df.case==1]        
     else:
         df1_c = df.loc[g1][cont_var_cols]
         df2_c = df.loc[g2][cont_var_cols]

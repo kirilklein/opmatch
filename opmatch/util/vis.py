@@ -4,7 +4,7 @@ colors = plt.rcParams['axes.prop_cycle']
 import numpy as np
 from matplotlib.ticker import MaxNLocator
 
-def plot_matching(ps, exp_nexp_dic,
+def plot_matching(ps, case_ncase_dic,
     title='Optimal PS matching results',
     set_title=True,
     title_fs=18,
@@ -12,8 +12,8 @@ def plot_matching(ps, exp_nexp_dic,
     xlabel_fs=18,
     ylabel='Group Number',
     ylabel_fs=18,
-    exposed_label='exposed',
-    unexposed_label='not exposed',
+    case_label='case',
+    control_label='not case',
     legend=True,
     legend_fs=18,
     legend_pos=0,
@@ -22,33 +22,33 @@ def plot_matching(ps, exp_nexp_dic,
     save=False,
     figname='opmatch\\tests\\matched_ps.png',
     color=None,
-    markerstyle_exp='x',
-    markersize_exp=60,
-    markerstyle_unexp='o',
-    markersize_unexp=60,
+    markerstyle_case='x',
+    markersize_case=60,
+    markerstyle_control='o',
+    markersize_control=60,
     xtickparams_ls=14,
     ytickparams_ls=14,
     figsize=(7,5),
     dpi=100):
     
     fig, ax = plt.subplots(figsize=figsize)
-    exp_ids = list(exp_nexp_dic.keys())
+    case_ids = list(case_ncase_dic.keys())
 
-    for i, exp in enumerate(exp_ids):
+    for i, case in enumerate(case_ids):
         if i==0:
-            exp_label = exposed_label
-            nexp_label = unexposed_label    
+            case_label = case_label
+            ncase_label = control_label    
         else:
-            exp_label=nexp_label=None
+            case_label=ncase_label=None
         if isinstance(color, type(None)):
             color0 = list(plt.rcParams['axes.prop_cycle'])[0]['color']
             color1 = list(plt.rcParams['axes.prop_cycle'])[1]['color']
-        ax.scatter(ps[exp], i, marker=markerstyle_exp, color=color0, 
-                label=exp_label, s=markersize_exp)
-        nexp_ps = ps[exp_nexp_dic[exp]]
-        group_arr = np.ones(len(nexp_ps))*i
-        ax.scatter(nexp_ps, group_arr, marker=markerstyle_unexp, color=color1, 
-                label=nexp_label, s=markersize_unexp)
+        ax.scatter(ps[case], i, marker=markerstyle_case, color=color0, 
+                label=case_label, s=markersize_case)
+        ncase_ps = ps[case_ncase_dic[case]]
+        group_arr = np.ones(len(ncase_ps))*i
+        ax.scatter(ncase_ps, group_arr, marker=markerstyle_control, color=color1, 
+                label=ncase_label, s=markersize_control)
     if legend:
         ax.legend(fontsize=legend_fs, loc=legend_pos, facecolor=legend_facecolor)
     if set_title:

@@ -28,7 +28,7 @@ def test_std_diff_cont():
     plt.contourf(xx, yy, zz)
     plt.colorbar()
     plt.show()
-df = create_test_data.get_test_data(True, 100, 2, 2,pexp=.1, random_state=2)
-df['exposed'] = df.y
+df = create_test_data.get_test_data(True, 100, 2, 2,pcase=.1, random_state=2)
+df['case'] = df.y
 print(df.head())
 #test_std_diff_cont()

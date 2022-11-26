@@ -15,11 +15,11 @@ def combine_dicts(d1:dict, d2:dict)->dict:
                 dd[key].append(value)
     return dd
     
-def compute_avg_dist(df:pd.DataFrame, exp_nexp_dic:dict)->np.array:
-    """Computes the absolute average distance between the exposed and 
-    matched unexposed."""
-    keys = np.array(list(exp_nexp_dic.keys()))
-    values = np.array(list(exp_nexp_dic.values()))
+def compute_avg_dist(df:pd.DataFrame, case_ncase_dic:dict)->np.array:
+    """Computes the absolute average distance between the case and 
+    matched control."""
+    keys = np.array(list(case_ncase_dic.keys()))
+    values = np.array(list(case_ncase_dic.values()))
     ps = df.ps.to_numpy()
     abs_avg_dist = np.average(np.abs(ps[keys, np.newaxis] - ps[values]), axis=1)
     return abs_avg_dist

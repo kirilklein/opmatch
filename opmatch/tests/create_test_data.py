@@ -7,13 +7,13 @@ from scipy.stats import norm, bernoulli, uniform, binom
 
 
 def get_test_data(df=True, num_pat = 10, num_var = 3, num_bin_var =0, 
-    pexp=.5, random_state=None):
+    pcase=.5, random_state=None):
     if not isinstance(random_state, type(None)):
         np.random.seed(random_state)
     X = norm.rvs(size=(num_pat, num_var))
     if num_bin_var>0:
         B = np.random.randint(0,2, (num_pat, num_bin_var))
-    y = bernoulli.rvs(p=pexp , size=num_pat)
+    y = bernoulli.rvs(p=pcase , size=num_pat)
     ps = uniform.rvs(size=num_pat)
     if df:
         x_cols = ['x' + str(i) for i in range(num_var)]

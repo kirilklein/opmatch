@@ -4,9 +4,9 @@ import numpy as np
 from opmatch.main import match
 # import opmatch
 
-df = create_test_data.get_test_data(True, 7,pexp=.1, random_state=101)
+df = create_test_data.get_test_data(True, 7,pcase=.1, random_state=101)
 df['matched'] = 0
-df['exposed'] = df.y
+df['case'] = df.y
 test_data = np.array([
     [1, .8],
     [1, .4],
@@ -16,9 +16,9 @@ test_data = np.array([
     [0, .1],
     [0, .2]
 ])
-df_test = pd.DataFrame(columns=['exposed', 'ps'], 
+df_test = pd.DataFrame(columns=['case', 'ps'], 
             data = test_data)
-print('exposed', len(df[df.exposed==1]))
+print('case', len(df[df.case==1]))
 print('constant')
 dic_const = match(df=df_test, matching_ratio=2,metric='PS',
         matching_type='const')
