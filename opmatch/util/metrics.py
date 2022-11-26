@@ -9,9 +9,9 @@ def pairwise_abs_dist(a:np.ndarray, b:np.ndarray):
 
 def create_ps_dist_matrix(case_ps:np.ndarray, control_ps:np.ndarray, 
                     n_case:int, n_control:int, min_mr:int, 
-                    max_mr:int, n_controls:int):
-    K = n_case * max_mr - n_controls
-    assert isinstance(K, int), 'make sure that max_mr and n_controls are integers'
+                    max_mr:int, n_control_pool:int):
+    K = n_case * max_mr - n_control_pool
+    assert isinstance(K, int), 'make sure that max_mr and n_control_pool are integers'
     dist_mat = pairwise_abs_dist(case_ps, control_ps)
     return dist_mat
 
