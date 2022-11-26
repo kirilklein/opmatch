@@ -4,7 +4,7 @@ from opmatch.util import variable_ratio_match, entire_number_match
 
 def match(df:pd.DataFrame, matching_ratio:int=None, min_mr:int=None, 
          max_mr:int=None, n_controls:int=None, metric:str='PS',
-         var_cols:List[str]=None, matching_type:str='const')->dict:
+         var_cols:List[str]=None, case_col:str='case',matching_type:str='const')->dict:
     """
     df: has to contain 'case' column, 
         matching dictionary will be returned with dataframe indices
@@ -22,18 +22,17 @@ def match(df:pd.DataFrame, matching_ratio:int=None, min_mr:int=None,
         {case0_id:[control00_id, control01_id,...], 
         case1_id:[control10_id, control11_id, ...]}
     """
-    
+    df[case_col] = df[case_col].astype(bool)
     if matching_type=='const':
         assert isinstance(matching_ratio, int), 'Pass an integer to matching_ratio'
         n_case = len(df[(df.case==1)])
-        matching_dic = variable_ratio_match.match(df=df, min_mr=matching_ratio, 
+        matching_dic = variable_ratio_match.match(df, min_mr=matching_ratio, 
             max_mr=matching_ratio, n_controls=n_case*matching_ratio, 
-            metric=metric, var_cols=var_cols)
+            metric=metric, var_cols=var_cols, case_col=case_col)
         return matching_dic
     elif matching_type=='var':
-        matching_dic = variable_ratio_match.match(df=df, min_mr=min_mr, 
-            max_mr=max_mr, n_controls=n_controls, 
-            metric=metric, var_cols=var_cols)
+        matching_dic = variable_ratio_match.match(df, min_mr, 
+            max_mr, n_controls, metric, var_cols, case_col)
         return matching_dic
     elif matching_type=='entire_number':
         assert metric=='PS', 'For entire number matching the metric must be PS'

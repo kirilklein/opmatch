@@ -13,6 +13,6 @@ print(d)
 print('first func tested')
 df = create_test_data.get_test_data(True, 30, 3, .3)
 
-case_ncase_dic = {0:[1,2], 3:[4,5], 6:[7,8] }
-avg_dist = utils.compute_avg_dist(df, case_ncase_dic)
+case_control_dic = {0:[1,2], 3:[4,5], 6:[7,8] }
+avg_dist = utils.compute_avg_dist(df, case_control_dic)
 print(avg_dist)

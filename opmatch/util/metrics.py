@@ -7,12 +7,12 @@ def pairwise_abs_dist(a:np.ndarray, b:np.ndarray):
     """
     return np.abs(a[:,np.newaxis] - b[np.newaxis, :])
 
-def create_ps_dist_matrix(case_ps:np.ndarray, ncase_ps:np.ndarray, 
-                    n_case:int, n_ncase:int, min_mr:int, 
+def create_ps_dist_matrix(case_ps:np.ndarray, control_ps:np.ndarray, 
+                    n_case:int, n_control:int, min_mr:int, 
                     max_mr:int, n_controls:int):
     K = n_case * max_mr - n_controls
     assert isinstance(K, int), 'make sure that max_mr and n_controls are integers'
-    dist_mat = pairwise_abs_dist(case_ps, ncase_ps)
+    dist_mat = pairwise_abs_dist(case_ps, control_ps)
     return dist_mat
 
 def standardized_difference_bin(p_t:float, p_c:float):

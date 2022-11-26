@@ -27,9 +27,9 @@ df = pd.DataFrame(columns=['case', 'b0', 'b1'],
 
 #print(df)
 n_case = (df.case==1).sum()
-n_ncase = (df.case==0).sum()
+n_control = (df.case==0).sum()
 print('n_case =',n_case)
-print('n_ncase =',n_ncase)
+print('n_control =',n_control)
 def test_mahalanobis_dist():
     dists = []
     data = df[cols]
