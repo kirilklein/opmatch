@@ -5,8 +5,8 @@ requires = [
     "certifi",
     "pandas",
     "scikit-learn",
+    "scipy",
     "numpy",
-    "networkx",
     "matplotlib"
 ]
 build-backend = "setuptools.build_meta"

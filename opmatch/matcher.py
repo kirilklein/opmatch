@@ -78,13 +78,11 @@ class Matcher:
                     self.ps_col = 'ps'
             X_case = self.df_case[self.ps_col].to_numpy().reshape(-1,1)
             X_control = self.df_control[self.ps_col].to_numpy().reshape(-1,1)
-            self.metric = 'minkowski'
-            p = 1
+            dist_mat = cdist(X_case, X_control, metric='minkowski', p=1)
         else:
             X_case = self.df_case[self.var_cols]
             X_control = self.df_control[self.var_cols]
-            p = None
-        dist_mat = cdist(X_control, X_case, metric=self.metric, p=p)
+            dist_mat = cdist(X_control, X_case, metric=self.metric)
         case_control_dmat = self.case_control_dist_mat(dist_mat)
         match_result = linear_sum_assignment(case_control_dmat)
         case_control_dic = self.get_case_control_dic(match_result)
@@ -139,7 +137,7 @@ class Matcher:
         expanded_dist_mat[:self.n*(self.beta-self.alpha),self.M:] = np.inf
         return expanded_dist_mat
     def check_var_cols(self):
-        self.var_cols = df.columns
+        self.var_cols = self.df.columns
         self.var_cols.drop(self.case_col)
         warnings.warn('var_cols not specified, use all df columns, except for case column, to match/comput ps on.')
     def compute_ps(self):
@@ -149,5 +147,4 @@ class Matcher:
         X = self.df[self.var_cols]
         y = self.df[self.case_col]
         clf  = LogisticRegression(random_state=0).fit(X, y)
-        print(clf.predict_proba(X)[:,1])
         self.df['ps'] = clf.predict_proba(X)[:,1] # probability of being case
