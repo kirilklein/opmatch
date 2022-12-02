@@ -45,6 +45,8 @@ class Matcher:
             self.alpha = min_mr
             self.beta = max_mr
             self.m = n_controls
+        elif matching_type=='full':
+            assert False, "Full matching is not yet implemented."
         else:
             raise ValueError(f'Unknown matching_type={matching_type}')
 
@@ -55,18 +57,18 @@ class Matcher:
             
         self.var_cols = var_cols
         self.ps_col = ps_col
-        case_mask = self.df[self.case_col]
-        self.M = (~case_mask).sum() 
-        self.df_case = self.df[case_mask]
-        self.df_control = self.df[~case_mask]
-        self.case_ids = self.df_case.index
-        self.control_ids = self.df_control.index
+        self.case_mask = self.df[self.case_col]
+        self.M = (~self.case_mask).sum() 
+        #self.df_case = self.df[case_mask]
+        #self.df_control = self.df[~case_mask]
+        self.case_ids = df[self.case_mask].index
+        self.control_ids = df[~self.case_mask].index
         print(f'Number of cases: {self.n}')
         print(f'Size of the control pool: {self.M}')
-        print(f"alpha={self.alpha}, beta={self.beta}, M={self.M}, m={self.m}, n={self.n}")
+        #print(f"alpha={self.alpha}, beta={self.beta}, M={self.M}, m={self.m}, n={self.n}")
     def match(self):
         self.check_parameters()
-        if self.metric=='PS' or self.metric=='ps':
+        if self.metric in ['PS', 'ps']:
             if isinstance(self.ps_col, type(None)):
                 if 'ps' in self.df.columns:
                     self.ps_col = 'ps'
@@ -74,14 +76,14 @@ class Matcher:
                     self.ps_col = 'PS'
                 else:
                     warnings.warn("Propensity score column name not passed, and 'ps'/'PS' not found in df, perform logistic regression on var_cols, to compute ps")
-                    self.compute_ps()
                     self.ps_col = 'ps'
-            X_case = self.df_case[self.ps_col].to_numpy().reshape(-1,1)
-            X_control = self.df_control[self.ps_col].to_numpy().reshape(-1,1)
-            dist_mat = cdist(X_case, X_control, metric='minkowski', p=1)
+                    self.compute_ps()     
+            X_case = self.df.loc[self.case_mask, self.ps_col].to_numpy().reshape(-1,1)
+            X_control = self.df.loc[~self.case_mask, self.ps_col].to_numpy().reshape(-1,1)
+            dist_mat = cdist(X_control, X_case, metric='minkowski', p=1)
         else:
-            X_case = self.df_case[self.var_cols]
-            X_control = self.df_control[self.var_cols]
+            X_case = self.df.loc[self.case_mask, self.var_cols]
+            X_control = self.df.loc[~self.case_mask, self.var_cols]
             dist_mat = cdist(X_control, X_case, metric=self.metric)
         case_control_dmat = self.case_control_dist_mat(dist_mat)
         match_result = linear_sum_assignment(case_control_dmat)
@@ -147,4 +149,5 @@ class Matcher:
         X = self.df[self.var_cols]
         y = self.df[self.case_col]
         clf  = LogisticRegression(random_state=0).fit(X, y)
-        self.df['ps'] = clf.predict_proba(X)[:,1] # probability of being case
+        self.df[self.ps_col] = clf.predict_proba(X)[:,1] # probability of being case
+        
