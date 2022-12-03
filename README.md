@@ -121,10 +121,6 @@ cc_dic_variable = Matcher(df=df, min_mr=1, max_mr=5, n_controls=15, metric='maha
     Size of the control pool: 95
     
 
-    c:\Users\fjn197\PhD\projects\opmatch\opmatch\matcher.py:85: UserWarning: Propensity score column name not passed, and 'ps'/'PS' not found in df, perform logistic regression on var_cols, to compute ps
-      warnings.warn("Propensity score column name not passed, and 'ps'/'PS' not found in df, perform logistic regression on var_cols, to compute ps")
-    
-
 ### Visualize
 
 
