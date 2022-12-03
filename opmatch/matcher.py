@@ -93,8 +93,8 @@ class Matcher:
         else:
             X_case = self.df.loc[self.case_mask, self.var_cols]
             X_control = self.df.loc[~self.case_mask, self.var_cols]
-        dist_mat = cdist(X_control, X_case, metric=self.metric, **self.dist_kwargs)
-        case_control_dmat = self.case_control_dist_mat(dist_mat)
+        self.dist_mat = cdist(X_control, X_case, metric=self.metric, **self.dist_kwargs) # M x n
+        case_control_dmat = self.case_control_dist_mat(self.dist_mat)
         match_result = linear_sum_assignment(case_control_dmat)
         case_control_dic = self.get_case_control_dic(match_result)
         return case_control_dic
