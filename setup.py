@@ -1,12 +1,16 @@
 from setuptools import setup
-
+from pathlib import Path
+this_directory = Path(__file__).parent
+long_description = (this_directory / "PyPi.md").read_text()
 
 setup(
     name='opmatch',
-    version='1.0.0',
+    version='1.0.1',
     author="Kiril Klein",
     author_email="kikl@di.ku.dk",
     description="A leightweight package to perform optimal case-control matching.",
+    long_description=long_description,
+    long_description_content_type='text/markdown',
     url="https://github.com/kirilklein/opmatch",
     license='MIT',
     classifiers=[  # Optional
@@ -16,8 +20,8 @@ setup(
         #   5 - Production/Stable
         "Development Status :: 4 - Beta",
         # Indicate who your project is intended for
-        "Intended Audience :: Medical Researchers, Epidemiologists, Statisticians",
-        "Topic :: Statistics :: Epidemiology",
+        "Intended Audience :: Science/Research",
+        "Topic :: Scientific/Engineering :: Bio-Informatics",
         # Pick your license as you wish
         "License :: OSI Approved :: MIT License",
         # Specify the Python versions you support here. In particular, ensure
