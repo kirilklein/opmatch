@@ -11,16 +11,19 @@ import numpy as np
 class Matcher:
     def __init__(self, df:pd.DataFrame, matching_ratio:int=None, min_mr:int=None, 
         max_mr:int=None, n_controls:int=None, metric:str='PS', matching_type:str='const',
-        case_col:str='case', var_cols:List[str]=None,  ps_col:str=None,
+        case_col:str='case', var_cols:List[str]=None,  ps_col:str=None, **dist_kwargs
         ) -> None:
         """
         matching_ratio: number of controls per case if matching ratio is constant
-        min_mr: minimum number of controls per case
-        max_mr: maximum number of controls per case
-        matching_type: constant or variable matching ratio
+        min_mr: minimum number of controls per case (alpha)
+        max_mr: maximum number of controls per case (beta)
+        n_controls: number of controls to match (m)
+        metric: propensity score (PS) or one of the metrics taken by scipy.spatial.distance.cdist
+        matching_type: constant or variable matching ratio 
         var_cols: if metric is not propensity score (PS), these columns will be used for matching
                 if metric is PS but PS is not one of the columns, these columns will be used to compute propensity score using logistic regression
         case_col: column name of case column, should contain 1s and 0s
+        **dist_kwargs: additional arguments passed to scipy.spatial.distance.cdist such as weight for covariates 
         From here on we follow the notation from the paper:
             A note on optimal matching with variable controls using the assignment algorithm
             alpha:=min_mr (minimal number of controls per case)
@@ -29,6 +32,7 @@ class Matcher:
             m:=num_controls (total number of controls to match)
             M:=n_control_pool (number of available controls)
             K= n*beta - m
+
         """
         df[case_col] = df[case_col].astype(bool)
         self.df = df
@@ -47,6 +51,8 @@ class Matcher:
             self.m = n_controls
         elif matching_type=='full':
             assert False, "Full matching is not yet implemented."
+        elif matching_type=='greedy':
+            assert False, "Greedy matching is not yet implemented."
         else:
             raise ValueError(f'Unknown matching_type={matching_type}')
 
@@ -63,6 +69,7 @@ class Matcher:
         #self.df_control = self.df[~case_mask]
         self.case_ids = df[self.case_mask].index
         self.control_ids = df[~self.case_mask].index
+        self.dist_kwargs = dist_kwargs
         print(f'Number of cases: {self.n}')
         print(f'Size of the control pool: {self.M}')
         #print(f"alpha={self.alpha}, beta={self.beta}, M={self.M}, m={self.m}, n={self.n}")
@@ -80,23 +87,25 @@ class Matcher:
                     self.compute_ps()     
             X_case = self.df.loc[self.case_mask, self.ps_col].to_numpy().reshape(-1,1)
             X_control = self.df.loc[~self.case_mask, self.ps_col].to_numpy().reshape(-1,1)
-            dist_mat = cdist(X_control, X_case, metric='minkowski', p=1)
+            self.metric = 'minkowski'
+            self.dist_kwargs['p'] = 1
+            #dist_mat = cdist(X_control, X_case, metric='minkowski', p=1)
         else:
             X_case = self.df.loc[self.case_mask, self.var_cols]
             X_control = self.df.loc[~self.case_mask, self.var_cols]
-            dist_mat = cdist(X_control, X_case, metric=self.metric)
+        dist_mat = cdist(X_control, X_case, metric=self.metric, **self.dist_kwargs)
         case_control_dmat = self.case_control_dist_mat(dist_mat)
         match_result = linear_sum_assignment(case_control_dmat)
         case_control_dic = self.get_case_control_dic(match_result)
         return case_control_dic
     
     def check_parameters(self):
+        """Check whether the parameters are within the accepted range"""
         assert self.m<=self.M, f'controls to match={self.m}>{self.M}=size of control pool'
-        assert self.alpha>=1, 'min_mr<1'
-        # TODO: think about the line below
-        assert self.beta<=(self.m-self.n+1), f'max_mr>(total_controls-n_case+1)={self.m-self.n+1}'
-        assert self.beta>=np.ceil(self.m/self.n), f'max_mr<np.ceil(total_controls/n_case)={np.ceil(self.m/self.n)}'
-        assert self.alpha<=np.floor(self.m/self.n), f'min_mr>np.floor(n_controls/n_case)={np.floor(self.m/self.n)}'
+        assert self.alpha>=1, f'min_mr={self.alpha}<1'
+        assert self.beta<=(self.m-self.n+1), f'max_mr={self.beta}>(total_controls-n_case+1)={self.m-self.n+1}'
+        assert self.beta>=np.ceil(self.m/self.n), f'max_mr={self.beta}<np.ceil(total_controls/n_case)={np.ceil(self.m/self.n)}'
+        assert self.alpha<=np.floor(self.m/self.n), f'min_mr={self.alpha}>np.floor(n_controls/n_case)={np.floor(self.m/self.n)}'
         assert self.n*self.alpha <= self.m <= self.M, f'n_cases*min_mr<=n_controls<=n_control_pool does not hold'
         
     def get_case_control_dic(self,match_result:tuple)->dict:
@@ -151,3 +160,4 @@ class Matcher:
         clf  = LogisticRegression(random_state=0).fit(X, y)
         self.df[self.ps_col] = clf.predict_proba(X)[:,1] # probability of being case
         
+#TODO tests
