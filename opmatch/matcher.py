@@ -142,8 +142,6 @@ class Matcher:
         expanded_dist_mat = np.hstack([expanded_dist_mat, sink_mat]) # n_cases*beta x n_control_pool
         mask = np.mod(np.arange(len(expanded_dist_mat)), self.beta)<self.alpha # from every block of beta, set alpha rows to inf
         expanded_dist_mat[mask, self.M:] = np.inf
-        assert expanded_dist_mat.shape[0]==self.n*self.beta, f'expanded_dist_mat.shape[0]={expanded_dist_mat.shape[0]}!=n_cases*beta={self.n*self.beta}'
-        assert expanded_dist_mat.shape[1]==self.M+K, f'expanded_dist_mat.shape[1]={expanded_dist_mat.shape[1]}!=M+K={self.M+K}'
         # set alpha rows to inf leaving out beta-alpha rows
         expanded_dist_mat[:self.n*(self.beta-self.alpha),self.M:] = np.inf
         return expanded_dist_mat

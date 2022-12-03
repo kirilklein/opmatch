@@ -1,19 +1,44 @@
 import matplotlib.pyplot as plt
-plt.style.use('ggplot')
-colors = plt.rcParams['axes.prop_cycle']
-import numpy as np
 from matplotlib.ticker import MaxNLocator
+import numpy as np
 
-def plot_matching(ps, case_control_dic,
-    title='Optimal PS matching results',
+def age_bmi_scatter_2d(df):
+    plt.figure(figsize=(4,3)) 
+    plt.plot(df.age[df.case==0], df.bmi[df.case==0], 'bo', label='control')
+    plt.plot(df.age[df.case==1], df.bmi[df.case==1], 'ro', label='case')
+    plt.xlabel('age')
+    plt.ylabel('bmi')
+    plt.legend(loc=(0,1.02), ncol=2)
+
+def visualize_matched_scatter(df, cc_dics, titles):
+    colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
+    fig, axes = plt.subplots(1,len(cc_dics), figsize=(8,4))
+    for cc_dic, title, ax in zip(cc_dics,titles,  axes):
+        matched = []
+        for color, (case, controls) in zip(colors, cc_dic.items()):
+            matched.extend(controls)
+            matched.append(case)
+           
+            ax.scatter(df.loc[case, 'age'], df.loc[case, 'bmi'], color = color, marker = 'x')
+            ax.scatter(df.loc[controls, 'age'], df.loc[controls, 'bmi'], color = color, marker='o')
+        unmatched = [i for i in df.index if i not in matched]
+        ax.scatter(df.loc[unmatched, 'age'], df.loc[unmatched, 'bmi'], color = 'k', marker='.', alpha=.2)
+        ax.set_title(title)
+        
+    # set shared label for x and y axis
+    fig.text(0.5, 0.04, 'age', ha='center', va='center')
+    fig.text(0.04, 0.5, 'bmi', ha='center', va='center', rotation='vertical')
+
+def plot_ps_matched(ps, case_control_dic,
+    title='Optimal PS matching',
     set_title=True,
     title_fs=18,
     xlabel='Propensity Score',
     xlabel_fs=18,
-    ylabel='Group Number',
+    ylabel='Case Number',
     ylabel_fs=18,
     case_label='case',
-    control_label='not case',
+    control_label='control',
     legend=True,
     legend_fs=18,
     legend_pos=0,
@@ -24,11 +49,11 @@ def plot_matching(ps, case_control_dic,
     color=None,
     markerstyle_case='x',
     markersize_case=60,
-    markerstyle_control='o',
-    markersize_control=60,
+    markerstyle_control='.',
+    markersize_control=40,
     xtickparams_ls=14,
     ytickparams_ls=14,
-    figsize=(7,5),
+    figsize=(4,3),
     dpi=100):
     
     fig, ax = plt.subplots(figsize=figsize)
@@ -63,4 +88,5 @@ def plot_matching(ps, case_control_dic,
         plt.show()
     if save:
         fig.savefig(figname, dpi=dpi)
+    
     
