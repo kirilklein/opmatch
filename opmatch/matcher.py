@@ -11,7 +11,7 @@ import numpy as np
 class Matcher:
     def __init__(self, df:pd.DataFrame, matching_ratio:int=None, min_mr:int=None, 
         max_mr:int=None, n_controls:int=None, metric:str='PS', matching_type:str='const',
-        case_col:str='case', var_cols:List[str]=None,  ps_col:str=None, **dist_kwargs
+        case_col:str='case', var_cols:List[str]=None,  ps_col:str=None, caliper=None, **dist_kwargs
         ) -> None:
         """
         matching_ratio: number of controls per case if matching ratio is constant
@@ -69,6 +69,7 @@ class Matcher:
         #self.df_control = self.df[~case_mask]
         self.case_ids = df[self.case_mask].index
         self.control_ids = df[~self.case_mask].index
+        self.caliper = caliper
         self.dist_kwargs = dist_kwargs
         print(f'Number of cases: {self.n}')
         print(f'Size of the control pool: {self.M}')
@@ -76,6 +77,7 @@ class Matcher:
     def match(self):
         self.check_parameters()
         if self.metric in ['PS', 'ps']:
+            # TODO: implement caliper
             if isinstance(self.ps_col, type(None)):
                 if 'ps' in self.df.columns:
                     self.ps_col = 'ps'
@@ -158,4 +160,5 @@ class Matcher:
         clf  = LogisticRegression(random_state=0).fit(X, y)
         self.df[self.ps_col] = clf.predict_proba(X)[:,1] # probability of being case
         
-#TODO tests
+    def full_match(self):
+        assert False, 'not implemented yet'
