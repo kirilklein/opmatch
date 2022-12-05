@@ -87,8 +87,8 @@ class Matcher:
                     self.compute_ps()     
             X_case = self.df.loc[self.case_mask, self.ps_col].to_numpy().reshape(-1,1)
             X_control = self.df.loc[~self.case_mask, self.ps_col].to_numpy().reshape(-1,1)
-            self.metric = 'minkowski'
-            self.dist_kwargs['p'] = 1
+            self.metric = lambda x,y: np.abs(x-y)#'minkowski'
+            #self.dist_kwargs['p'] = 1
             #dist_mat = cdist(X_control, X_case, metric='minkowski', p=1)
         else:
             X_case = self.df.loc[self.case_mask, self.var_cols]

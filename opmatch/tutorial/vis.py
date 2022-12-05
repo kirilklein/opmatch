@@ -72,7 +72,7 @@ def plot_ps_matched(df, case_control_dic,
         ax.scatter(ps[case], i+1, marker=markerstyle_case, color=color0, 
                 label=case_label, s=markersize_case)
         control_ps = ps[case_control_dic[case]]
-        group_arr = np.ones(len(control_ps))*i
+        group_arr = np.ones(len(control_ps))*(i+1)
         ax.scatter(control_ps, group_arr, marker=markerstyle_control, color=color1, 
                 label=control_label, s=markersize_control)
     ax.scatter(ps_control, np.zeros(len(ps_control)), label = 'all controls', color='gray', marker='.', s=markersize_control)

@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 from scipy.stats import truncnorm
 
+np.random.seed(0)
 def convert_scale(clip_a, clip_b, loc, scale):
     a, b = (clip_a - loc) / scale, (clip_b - loc) / scale
     return a, b
