@@ -1,0 +1,28 @@
+package:
+  name: "opmatch"
+  version: "1.0.1"
+
+source:
+  git_url: https://github.com/kirilklein/opmatch
+
+requirements:
+  host:
+    - python
+    - setuptools
+  build:
+    - python
+  run:
+    - python
+    - pandas
+    - numpy
+    - scipy
+    - matplotlib
+    - scikit-learn
+    
+
+about:
+  home: https://github.com/kirilklein/opmatch
+  license: MIT
+  license_familY: MIT
+  license_file: LICENSE
+  summary: "A lightweight package for optimal case-control matching"
