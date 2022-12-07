@@ -17,7 +17,7 @@ pip install opmatch
 ```
 or
 ```bash
-conda install -c conda-forge opmatch
+conda install -c ckirkle opmatch
 ```
 
 ## 📚 Introduction 
@@ -34,10 +34,7 @@ Optimal matching in its simplest form assigns one control to every case. However
 #### Full Matching
 A method superior to matching with a constant or variable ratio is full matching<sup>4</sup>. Full matching, in addition to having multiple controls per case, also allows to have multiple cases per control and thus includes other method as a special case. 
 
-<sub><sup>[1] Ming, Kewei, and Paul R. Rosenbaum. "A note on optimal matching with variable controls using the assignment algorithm." Journal of Computational and Graphical Statistics 10.3 (2001): 455-463.</sub></sup><br>
-<sub><sup>[2] Stuart, Elizabeth A. "Matching methods for causal inference: A review and a look forward." Statistical science: a review journal of the Institute of Mathematical Statistics 25.1 (2010): 1.</sub></sup><br>
-<sub><sup>[3] Rosenbaum, Paul R., P. R. Rosenbaum, and Briskman. Design of observational studies. Vol. 10. New York: Springer, 2010.</sub></sup><br>
-<sub><sup>[4] Cochran, William G., and S. Paul Chambers. "The planning of observational studies of human populations." Journal of the Royal Statistical Society. Series A (General) 128.2 (1965): 234-266.</sub></sup>
+
 
 ## 🚀 Quick Tour
 ----------------------------------
@@ -104,12 +101,12 @@ vis.age_bmi_scatter_2d(df)
 
 
 ```python
-from opmatch.matcher import Matcher
-cc_dic_const = Matcher(df=df, matching_ratio=5, metric='mahalanobis', 
+from opmatch import matcher
+cc_dic_const = matcher.Matcher(df=df, matching_ratio=5, metric='mahalanobis', 
             matching_type='const', var_cols=['age','bmi']).match()
-cc_dic_ps = Matcher(df=df, min_mr=1, max_mr=5, n_controls=15, metric='PS', 
+cc_dic_ps = matcher.Matcher(df=df, min_mr=1, max_mr=5, n_controls=15, metric='PS', 
             matching_type='variable', var_cols=['age','bmi']).match()
-cc_dic_variable = Matcher(df=df, min_mr=1, max_mr=5, n_controls=15, metric='mahalanobis', 
+cc_dic_variable = matcher.Matcher(df=df, min_mr=1, max_mr=5, n_controls=15, metric='mahalanobis', 
             matching_type='variable', var_cols=['age','bmi']).match()
 ```
 
@@ -121,7 +118,15 @@ cc_dic_variable = Matcher(df=df, min_mr=1, max_mr=5, n_controls=15, metric='maha
     Size of the control pool: 95
     
 
-### Visualize
+    c:\Users\fjn197\PhD\projects\opmatch\opmatch\matcher.py:85: UserWarning: Propensity score column name not passed, and 'ps'/'PS' not found in df, perform logistic regression on var_cols, to compute ps
+      warnings.warn("Propensity score column name not passed, and 'ps'/'PS' not found in df, perform logistic regression on var_cols, to compute ps")
+    
+
+### Evaluate
+
+There exist numerous methods to evaluate a match. Some great examples are given in<sup>1</sup>. Here we will have a look at some of them.
+
+In the case of few covariates one can look at the scatter plot:
 
 
 ```python
@@ -130,17 +135,45 @@ vis.visualize_matched_scatter(df, [cc_dic_const, cc_dic_variable], titles=['Cons
 
 
     
-![png](README_files/README_13_0.png)
+![png](README_files/README_15_0.png)
     
 
 
+Here we would discard case number 1 because of the bias that is introduced.
+
 
 ```python
-vis.plot_ps_matched(df.ps, case_control_dic=cc_dic_ps, figsize=(5,4), )
+vis.plot_ps_matched(df, case_control_dic=cc_dic_ps, figsize=(5,4), )
 ```
 
 
     
-![png](README_files/README_14_0.png)
+![png](README_files/README_17_0.png)
     
+
+
+Not all cases end up with good matches. For PS matching, one usually sets a caliper (a maximal absolute distance) and discards controls that are too far.
+
+
+```python
+import importlib
+importlib.reload(vis)
+vis.standardized_difference_plot(df, cc_dic=cc_dic_const)
+```
+
+
+    
+![png](README_files/README_19_0.png)
+    
+
+
+As expected, the absolute standardized difference is reduced by the matching.
+
+## References
+
+<sup>[1] Ming, Kewei, and Paul R. Rosenbaum. "A note on optimal matching with variable controls using the assignment algorithm." Journal of Computational and Graphical Statistics 10.3 (2001): 455-463.</sup><br>
+<sup>[2] Stuart, Elizabeth A. "Matching methods for causal inference: A review and a look forward." Statistical science: a review journal of the Institute of Mathematical Statistics 25.1 (2010): 1.</sup><br>
+<sup>[3] Rosenbaum, Paul R., P. R. Rosenbaum, and Briskman. Design of observational studies. Vol. 10. New York: Springer, 2010.</sup><br>
+<sup>[4] Cochran, William G., and S. Paul Chambers. "The planning of observational studies of human populations." Journal of the Royal Statistical Society. Series A (General) 128.2 (1965): 234-266.</sup><br>
+<sup>[5] Gatto, Nicolle M., et al. "Visualizations throughout pharmacoepidemiology study planning, implementation, and reporting." Pharmacoepidemiology and Drug Safety 31.11 (2022): 1140-1152.</sup>
 
