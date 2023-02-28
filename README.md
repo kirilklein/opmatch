@@ -15,10 +15,12 @@
 ```bash
 pip install opmatch
 ```
+<!-- 
 or
 ```bash
 conda install -c ckirkle opmatch
 ```
+-->
 
 ## 📚 Introduction 
 -------------------------------
